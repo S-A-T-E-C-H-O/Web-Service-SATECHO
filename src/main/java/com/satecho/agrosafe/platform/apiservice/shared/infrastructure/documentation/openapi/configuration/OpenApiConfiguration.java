@@ -1,0 +1,93 @@
+package com.satecho.agrosafe.platform.apiservice.shared.infrastructure.documentation.openapi.configuration;
+
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.ExternalDocumentation;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
+
+/**
+ * Configures the OpenAPI specification exposed by the platform.
+ */
+@Configuration
+public class OpenApiConfiguration {
+
+    // Properties
+    @Value("${spring.application.name}")
+    String applicationName;
+
+    @Value("${documentation.application.description}")
+    String applicationDescription;
+
+    @Value("${documentation.application.version}")
+    String applicationVersion;
+
+    // Methods
+
+    /**
+     * Builds the OpenAPI document used by Swagger UI and client generation tools.
+     *
+     * @return configured OpenAPI descriptor
+     */
+    @Bean
+    public OpenAPI agroSafeformopenAPI() {
+
+        // General configuration
+        var openAPI = new OpenAPI();
+        openAPI
+                .info(new Info()
+                        .title(this.applicationName)
+                        .description(this.applicationDescription)
+                        .version(this.applicationVersion)
+                        .contact(new Contact()
+                                .name("SATECHO AgroSafe Support")
+                                .email("support@satecho-agrosafe.com")
+                                .url("https://satecho-agrosafe.com/support"))
+                        .license(new License()
+                                .name("Apache 2.0")
+                                .url("https://springdoc.org")))
+                .externalDocs(new ExternalDocumentation()
+                        .description("SATECHO AgroSafe API Documentation")
+                        .url("https://springdoc.org"));
+
+        // Add server configurations
+        openAPI.servers(List.of(
+                new Server()
+                        .url("http://localhost:8080")
+                        .description("Local Development Environment"),
+                new Server()
+                        .url("https://staging-api.acme-learning.com")
+                        .description("Staging Environment"),
+                new Server()
+                        .url("https://api.acme-learning.com")
+                        .description("Production Environment")
+        ));
+
+        // Add a security scheme
+        final String securitySchemeName = "bearerAuth";
+
+        openAPI.addSecurityItem(new SecurityRequirement()
+                        .addList(securitySchemeName))
+                .components(new Components()
+                        .addSecuritySchemes(securitySchemeName,
+                                new SecurityScheme()
+                                        .name(securitySchemeName)
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")
+                                        .description("JWT Bearer token for API authentication")));
+
+        // Return the OpenAPI configuration object with all the settings
+
+        return openAPI;
+    }
+}
