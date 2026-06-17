@@ -1,0 +1,140 @@
+spring:
+  profiles:
+    active: dev
+    application:
+      name: agrosafe-backend
+
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: com.satecho.agrosafe.platform.shared.infrastructure.persistence.jpa.configuration.strategy.SnakeCaseWithPluralizedTablePhysicalNamingStrategy
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+        format_sql: true
+
+  # Datasource Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/agrosafe
+    username: agrosafe_user
+    password: agrosafe_pass
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 600000
+
+  # RabbitMQ Configuration
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    listener:
+      simple:
+        concurrency: 3
+        max-concurrency: 10
+        prefetch: 10
+
+  # Redis Configuration
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      timeout: 2000ms
+      jedis:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+  # Jackson Configuration
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+# Server Configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.agrosafe: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.amqp: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# OpenAPI / Swagger documentation metadata
+documentation:
+  application:
+    description: AgroSafe Backend - Sistema de monitoreo agrícola IoT con arquitectura de monolito modular (DDD + CQRS)
+    version: 0.1.0
+
+# MQTT — Edge Gateway integration
+mqtt:
+  broker-url: ${MQTT_BROKER_URL:tcp://localhost:1883}
+  client-id: ${MQTT_CLIENT_ID:agrosafe-backend}
+  username: ${MQTT_USERNAME:}
+  password: ${MQTT_PASSWORD:}
+  qos: 1                        # at-least-once delivery
+  clean-session: false          # persist subscriptions across reconnects
+  connection-timeout: 30
+  keep-alive-interval: 60
+  edge:
+    api-key: ${MQTT_EDGE_API_KEY:edge-shared-secret-change-me}
+  topics:
+    soil:    "agrosafe/+/devices/+/soil/reading"
+    security: "agrosafe/+/devices/+/security/event"
+    valve:   "agrosafe/+/devices/+/valve/state"
+    status:  "agrosafe/+/devices/+/status"
+    battery: "agrosafe/+/devices/+/battery"
+
+# JWT Authorization (IAM Bounded Context)
+authorization:
+  jwt:
+    secret: ${JWT_SECRET:your-super-secret-key-change-this-in-production-at-least-32-characters-long}
+    expiration:
+      days: 1
+
+# Device API Key authentication
+app:
+  jwt:
+    secret: ${JWT_SECRET:your-super-secret-key-change-this-in-production-at-least-32-characters-long}
+    expiration: 86400000  # 24 hours
+    refresh-expiration: 604800000  # 7 days
+  device:
+    api-key-header: X-Device-Api-Key
+  base-url: ${APP_BASE_URL:http://localhost:8080}
+  frontend-url: ${APP_FRONTEND_URL:http://localhost:5173}
+
+# Resend email service
+resend:
+  api-key: ${RESEND_API_KEY:re_test_placeholder}
+  from: ${RESEND_FROM:onboarding@resend.dev}
