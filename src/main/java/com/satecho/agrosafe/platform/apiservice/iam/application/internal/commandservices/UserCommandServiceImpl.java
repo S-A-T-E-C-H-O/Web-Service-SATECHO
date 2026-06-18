@@ -1,11 +1,14 @@
 package com.satecho.agrosafe.platform.apiservice.iam.application.internal.commandservices;
 
 import com.satecho.agrosafe.platform.apiservice.iam.application.commandservices.UserCommandService;
+import com.satecho.agrosafe.platform.apiservice.iam.application.internal.outboundservices.email.EmailService;
 import com.satecho.agrosafe.platform.apiservice.iam.application.internal.outboundservices.hashing.HashingService;
 import com.satecho.agrosafe.platform.apiservice.iam.application.internal.outboundservices.tokens.TokenService;
 import com.satecho.agrosafe.platform.apiservice.iam.domain.model.aggregates.User;
+import com.satecho.agrosafe.platform.apiservice.iam.domain.model.commands.ResendVerificationCommand;
 import com.satecho.agrosafe.platform.apiservice.iam.domain.model.commands.SignInCommand;
 import com.satecho.agrosafe.platform.apiservice.iam.domain.model.commands.SignUpCommand;
+import com.satecho.agrosafe.platform.apiservice.iam.domain.model.commands.VerifyAccountCommand;
 import com.satecho.agrosafe.platform.apiservice.iam.domain.repositories.RoleRepository;
 import com.satecho.agrosafe.platform.apiservice.iam.domain.repositories.UserRepository;
 import com.satecho.agrosafe.platform.apiservice.shared.application.result.ApplicationError;
@@ -22,16 +25,19 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final HashingService hashingService;
     private final TokenService tokenService;
     private final RoleRepository roleRepository;
+    private final EmailService emailService;
 
     public UserCommandServiceImpl(
             UserRepository userRepository,
             HashingService hashingService,
             TokenService tokenService,
-            RoleRepository roleRepository) {
+            RoleRepository roleRepository,
+            EmailService emailService) {
         this.userRepository = userRepository;
         this.hashingService = hashingService;
         this.tokenService = tokenService;
         this.roleRepository = roleRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -71,9 +77,40 @@ public class UserCommandServiceImpl implements UserCommandService {
         var user = new User(command.email(), hashingService.encode(command.password()), command.fullName(), resolvedRoles);
         user.setVerificationToken(verificationToken);
         userRepository.save(user);
+        emailService.sendVerificationEmail(command.email(), command.fullName(), verificationToken);
 
         return userRepository.findByEmail(command.email())
                 .<Result<User, ApplicationError>>map(Result::success)
                 .orElseGet(() -> Result.failure(ApplicationError.unexpected("sign-up", "Created user could not be reloaded")));
+    }
+
+    @Override
+    public Result<User, ApplicationError> verifyAccount(VerifyAccountCommand command) {
+        var user = userRepository.findByVerificationToken(command.token());
+        if (user.isEmpty()) {
+            return Result.failure(ApplicationError.notFound("VerificationToken", command.token()));
+        }
+        var u = user.get();
+        u.setVerified(true);
+        u.setVerificationToken(null);
+        var saved = userRepository.save(u);
+        return Result.success(saved);
+    }
+
+    @Override
+    public Result<Void, ApplicationError> resendVerification(ResendVerificationCommand command) {
+        var user = userRepository.findByEmail(command.email());
+        if (user.isEmpty()) {
+            return Result.failure(ApplicationError.notFound("User", command.email()));
+        }
+        if (Boolean.TRUE.equals(user.get().getVerified())) {
+            return Result.failure(ApplicationError.conflict("account", "Account is already verified"));
+        }
+        var u = user.get();
+        var verificationToken = UUID.randomUUID().toString().replace("-", "");
+        u.setVerificationToken(verificationToken);
+        userRepository.save(u);
+        emailService.sendVerificationEmail(u.getEmail(), u.getFullName(), verificationToken);
+        return Result.success(null);
     }
 }
