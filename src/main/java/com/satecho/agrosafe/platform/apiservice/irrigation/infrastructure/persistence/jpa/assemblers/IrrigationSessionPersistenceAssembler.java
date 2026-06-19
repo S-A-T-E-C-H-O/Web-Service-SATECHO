@@ -1,9 +1,9 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.assemblers;
 
-import com.satecho.agrosafe.platform.irrigation.domain.model.aggregates.IrrigationSession;
-import com.satecho.agrosafe.platform.irrigation.domain.model.valueobjects.SessionResult;
-import com.satecho.agrosafe.platform.irrigation.infrastructure.persistence.jpa.entities.IrrigationSessionPersistenceEntity;
-import com.satecho.agrosafe.platform.irrigation.infrastructure.persistence.jpa.entities.SessionResultEmbeddable;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates.IrrigationSession;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.valueobjects.SessionResult;
+import com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.entities.IrrigationSessionPersistenceEntity;
+import com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.entities.SessionResultEmbeddable;
 
 public final class IrrigationSessionPersistenceAssembler {
     private IrrigationSessionPersistenceAssembler() {}

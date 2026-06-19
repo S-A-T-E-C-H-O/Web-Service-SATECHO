@@ -1,7 +1,7 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.assemblers;
 
-import com.satecho.agrosafe.platform.irrigation.domain.model.aggregates.IrrigationSchedule;
-import com.satecho.agrosafe.platform.irrigation.infrastructure.persistence.jpa.entities.IrrigationSchedulePersistenceEntity;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates.IrrigationSchedule;
+import com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.entities.IrrigationSchedulePersistenceEntity;
 
 public final class IrrigationSchedulePersistenceAssembler {
     private IrrigationSchedulePersistenceAssembler() {}
