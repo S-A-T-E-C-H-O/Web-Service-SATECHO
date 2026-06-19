@@ -18,6 +18,7 @@ public final class NotificationPersistenceAssembler {
         d.setDeliveryStatus(e.getDeliveryStatus());
         d.setRelatedEntityId(e.getRelatedEntityId());
         d.setRelatedEntityType(e.getRelatedEntityType());
+        d.setRecipientAddress(e.getRecipientAddress());
         d.setSentAt(e.getSentAt());
         d.setDeliveredAt(e.getDeliveredAt());
         d.setReadAt(e.getReadAt());
@@ -36,6 +37,7 @@ public final class NotificationPersistenceAssembler {
         e.setDeliveryStatus(d.getDeliveryStatus());
         e.setRelatedEntityId(d.getRelatedEntityId());
         e.setRelatedEntityType(d.getRelatedEntityType());
+        e.setRecipientAddress(d.getRecipientAddress());
         e.setSentAt(d.getSentAt());
         e.setDeliveredAt(d.getDeliveredAt());
         e.setReadAt(d.getReadAt());

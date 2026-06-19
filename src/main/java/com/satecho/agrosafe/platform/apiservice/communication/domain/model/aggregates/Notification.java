@@ -20,6 +20,7 @@ public class Notification extends AuditableAbstractAggregateRoot<Notification> {
     @Setter private DeliveryStatus deliveryStatus;
     @Setter private Long relatedEntityId;
     @Setter private String relatedEntityType;
+    @Setter private String recipientAddress;
     @Setter private Instant sentAt;
     @Setter private Instant deliveredAt;
     @Setter private Instant readAt;

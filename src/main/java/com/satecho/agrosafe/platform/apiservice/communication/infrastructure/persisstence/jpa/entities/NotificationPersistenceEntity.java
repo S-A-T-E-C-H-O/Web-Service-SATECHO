@@ -37,6 +37,8 @@ public class NotificationPersistenceEntity extends AuditableAbstractPersistenceE
     private Long relatedEntityId;
     @Column(name = "related_entity_type", length = 50)
     private String relatedEntityType;
+    @Column(name = "recipient_address", length = 500)
+    private String recipientAddress;
     @Column(name = "sent_at")
     private Instant sentAt;
     @Column(name = "delivered_at")

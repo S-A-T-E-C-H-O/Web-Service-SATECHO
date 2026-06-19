@@ -4,7 +4,8 @@ import com.satecho.agrosafe.platform.apiservice.communication.domain.model.value
 import com.satecho.agrosafe.platform.apiservice.communication.domain.model.valueobjects.NotificationType;
 
 public record SendNotificationCommand(Long userId, NotificationType type, String title, String body,
-                                      NotificationChannel channel, Long relatedEntityId, String relatedEntityType) {
+                                      NotificationChannel channel, Long relatedEntityId, String relatedEntityType,
+                                      String recipientAddress) {
     public SendNotificationCommand {
         if (userId == null) throw new IllegalArgumentException("userId cannot be null");
         if (type == null) throw new IllegalArgumentException("type cannot be null");
