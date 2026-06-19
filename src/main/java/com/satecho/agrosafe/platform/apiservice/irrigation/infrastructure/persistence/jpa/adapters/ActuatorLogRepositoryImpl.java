@@ -1,9 +1,9 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.adapters;
 
-import com.satecho.agrosafe.platform.irrigation.domain.model.aggregates.ActuatorLog;
-import com.satecho.agrosafe.platform.irrigation.domain.repositories.ActuatorLogRepository;
-import com.satecho.agrosafe.platform.irrigation.infrastructure.persistence.jpa.assemblers.ActuatorLogPersistenceAssembler;
-import com.satecho.agrosafe.platform.irrigation.infrastructure.persistence.jpa.repositories.ActuatorLogPersistenceRepository;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates.ActuatorLog;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.repositories.ActuatorLogRepository;
+import com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.assemblers.ActuatorLogPersistenceAssembler;
+import com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.repositories.ActuatorLogPersistenceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;

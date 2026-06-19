@@ -1,7 +1,7 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates;
 
-import com.satecho.agrosafe.platform.irrigation.domain.model.valueobjects.RecurrencePattern;
-import com.satecho.agrosafe.platform.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.valueobjects.RecurrencePattern;
+import com.satecho.agrosafe.platform.apiservice.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import lombok.Getter;
 import lombok.Setter;
 

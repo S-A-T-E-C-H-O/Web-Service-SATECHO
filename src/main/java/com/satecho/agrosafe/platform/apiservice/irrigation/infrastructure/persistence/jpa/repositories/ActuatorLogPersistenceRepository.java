@@ -1,6 +1,6 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.repositories;
 
-import com.satecho.agrosafe.platform.irrigation.infrastructure.persistence.jpa.entities.ActuatorLogPersistenceEntity;
+import com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.entities.ActuatorLogPersistenceEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,6 +1,6 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.domain.repositories;
 
-import com.satecho.agrosafe.platform.irrigation.domain.model.aggregates.ActuatorLog;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates.ActuatorLog;
 
 import java.time.Instant;
 import java.util.List;

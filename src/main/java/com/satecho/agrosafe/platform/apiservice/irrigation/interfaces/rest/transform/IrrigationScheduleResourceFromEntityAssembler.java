@@ -1,7 +1,7 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.interfaces.rest.transform;
 
-import com.satecho.agrosafe.platform.irrigation.domain.model.aggregates.IrrigationSchedule;
-import com.satecho.agrosafe.platform.irrigation.interfaces.rest.resources.IrrigationScheduleResource;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates.IrrigationSchedule;
+import com.satecho.agrosafe.platform.apiservice.irrigation.interfaces.rest.resources.IrrigationScheduleResource;
 
 public final class IrrigationScheduleResourceFromEntityAssembler {
     private IrrigationScheduleResourceFromEntityAssembler() {}

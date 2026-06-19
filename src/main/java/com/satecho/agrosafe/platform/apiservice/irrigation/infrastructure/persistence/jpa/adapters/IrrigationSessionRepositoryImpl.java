@@ -1,10 +1,10 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.adapters;
 
-import com.satecho.agrosafe.platform.irrigation.domain.model.aggregates.IrrigationSession;
-import com.satecho.agrosafe.platform.irrigation.domain.model.valueobjects.IrrigationStatus;
-import com.satecho.agrosafe.platform.irrigation.domain.repositories.IrrigationSessionRepository;
-import com.satecho.agrosafe.platform.irrigation.infrastructure.persistence.jpa.assemblers.IrrigationSessionPersistenceAssembler;
-import com.satecho.agrosafe.platform.irrigation.infrastructure.persistence.jpa.repositories.IrrigationSessionPersistenceRepository;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates.IrrigationSession;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.valueobjects.IrrigationStatus;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.repositories.IrrigationSessionRepository;
+import com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.assemblers.IrrigationSessionPersistenceAssembler;
+import com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.repositories.IrrigationSessionPersistenceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;

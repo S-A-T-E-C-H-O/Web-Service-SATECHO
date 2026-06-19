@@ -1,6 +1,6 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.repositories;
 
-import com.satecho.agrosafe.platform.irrigation.infrastructure.persistence.jpa.entities.IrrigationSchedulePersistenceEntity;
+import com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.entities.IrrigationSchedulePersistenceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

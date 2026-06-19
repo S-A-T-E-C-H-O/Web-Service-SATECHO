@@ -1,9 +1,9 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.application.internal.queryservices;
 
-import com.satecho.agrosafe.platform.irrigation.application.queryservices.ActuatorQueryService;
-import com.satecho.agrosafe.platform.irrigation.domain.model.aggregates.ActuatorLog;
-import com.satecho.agrosafe.platform.irrigation.domain.model.queries.GetActuatorLogsByDeviceQuery;
-import com.satecho.agrosafe.platform.irrigation.domain.repositories.ActuatorLogRepository;
+import com.satecho.agrosafe.platform.apiservice.irrigation.application.queryservices.ActuatorQueryService;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates.ActuatorLog;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.queries.GetActuatorLogsByDeviceQuery;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.repositories.ActuatorLogRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

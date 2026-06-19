@@ -1,7 +1,7 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.domain.repositories;
 
-import com.satecho.agrosafe.platform.irrigation.domain.model.aggregates.IrrigationSession;
-import com.satecho.agrosafe.platform.irrigation.domain.model.valueobjects.IrrigationStatus;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates.IrrigationSession;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.valueobjects.IrrigationStatus;
 
 import java.time.Instant;
 import java.util.List;

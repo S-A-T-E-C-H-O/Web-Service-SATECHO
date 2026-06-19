@@ -1,7 +1,7 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.assemblers;
 
-import com.satecho.agrosafe.platform.irrigation.domain.model.aggregates.ActuatorLog;
-import com.satecho.agrosafe.platform.irrigation.infrastructure.persistence.jpa.entities.ActuatorLogPersistenceEntity;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates.ActuatorLog;
+import com.satecho.agrosafe.platform.apiservice.irrigation.infrastructure.persistence.jpa.entities.ActuatorLogPersistenceEntity;
 
 public final class ActuatorLogPersistenceAssembler {
     private ActuatorLogPersistenceAssembler() {}
