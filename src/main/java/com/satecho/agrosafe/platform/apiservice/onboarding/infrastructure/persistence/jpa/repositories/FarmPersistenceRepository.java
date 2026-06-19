@@ -1,0 +1,12 @@
+package com.satecho.agrosafe.platform.apiservice.onboarding.infrastructure.persistence.jpa.repositories;
+
+import com.satecho.agrosafe.platform.apiservice.onboarding.infrastructure.persistence.jpa.entities.FarmPersistenceEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface FarmPersistenceRepository extends JpaRepository<FarmPersistenceEntity, Long> {
+    List<FarmPersistenceEntity> findAllByUserId(Long userId);
+}
