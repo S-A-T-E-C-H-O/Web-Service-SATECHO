@@ -1,14 +1,15 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.interfaces.rest;
 
-import com.satecho.agrosafe.platform.irrigation.application.commandservices.ActuatorCommandService;
-import com.satecho.agrosafe.platform.irrigation.application.queryservices.ActuatorQueryService;
-import com.satecho.agrosafe.platform.irrigation.domain.model.commands.LogActuatorCommand;
-import com.satecho.agrosafe.platform.irrigation.domain.model.queries.GetActuatorLogsByDeviceQuery;
-import com.satecho.agrosafe.platform.irrigation.domain.model.valueobjects.ActuatorAction;
-import com.satecho.agrosafe.platform.irrigation.domain.model.valueobjects.ActuatorType;
-import com.satecho.agrosafe.platform.irrigation.interfaces.rest.resources.ActuatorCommandResource;
-import com.satecho.agrosafe.platform.irrigation.interfaces.rest.resources.ActuatorLogResource;
-import com.satecho.agrosafe.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
+import com.satecho.agrosafe.platform.apiservice.irrigation.application.commandservices.ActuatorCommandService;
+import com.satecho.agrosafe.platform.apiservice.irrigation.application.queryservices.ActuatorQueryService;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates.ActuatorLog;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.commands.LogActuatorCommand;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.queries.GetActuatorLogsByDeviceQuery;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.valueobjects.ActuatorAction;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.valueobjects.ActuatorType;
+import com.satecho.agrosafe.platform.apiservice.irrigation.interfaces.rest.resources.ActuatorCommandResource;
+import com.satecho.agrosafe.platform.apiservice.irrigation.interfaces.rest.resources.ActuatorLogResource;
+import com.satecho.agrosafe.platform.apiservice.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ public class ActuatorController {
         return ResponseEntity.ok(resources);
     }
 
-    private static ActuatorLogResource toActuatorLogResource(com.satecho.agrosafe.platform.irrigation.domain.model.aggregates.ActuatorLog log) {
+    private static ActuatorLogResource toActuatorLogResource(ActuatorLog log) {
         return new ActuatorLogResource(
                 log.getId(), log.getDeviceId(), log.getZoneId(),
                 log.getActuatorType().name(), log.getAction().name(),
