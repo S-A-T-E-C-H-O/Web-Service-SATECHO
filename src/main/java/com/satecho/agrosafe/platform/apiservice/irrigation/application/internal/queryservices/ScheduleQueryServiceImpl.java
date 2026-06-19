@@ -1,9 +1,9 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.application.internal.queryservices;
 
-import com.satecho.agrosafe.platform.irrigation.application.queryservices.ScheduleQueryService;
-import com.satecho.agrosafe.platform.irrigation.domain.model.aggregates.IrrigationSchedule;
-import com.satecho.agrosafe.platform.irrigation.domain.model.queries.*;
-import com.satecho.agrosafe.platform.irrigation.domain.repositories.IrrigationScheduleRepository;
+import com.satecho.agrosafe.platform.apiservice.irrigation.application.queryservices.ScheduleQueryService;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates.IrrigationSchedule;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.queries.*;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.repositories.IrrigationScheduleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

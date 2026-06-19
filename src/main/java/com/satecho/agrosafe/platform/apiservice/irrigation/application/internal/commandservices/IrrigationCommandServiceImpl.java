@@ -1,15 +1,15 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.application.internal.commandservices;
 
-import com.satecho.agrosafe.platform.irrigation.application.commandservices.IrrigationCommandService;
-import com.satecho.agrosafe.platform.irrigation.domain.exceptions.ActiveSessionExistsException;
-import com.satecho.agrosafe.platform.irrigation.domain.exceptions.NoActiveSessionException;
-import com.satecho.agrosafe.platform.irrigation.domain.model.aggregates.IrrigationSession;
-import com.satecho.agrosafe.platform.irrigation.domain.model.commands.*;
-import com.satecho.agrosafe.platform.irrigation.domain.model.valueobjects.IrrigationStatus;
-import com.satecho.agrosafe.platform.irrigation.domain.repositories.IrrigationSessionRepository;
-import com.satecho.agrosafe.platform.shared.application.result.ApplicationError;
-import com.satecho.agrosafe.platform.shared.application.result.Result;
-import com.satecho.agrosafe.platform.shared.interfaces.mqtt.MqttActuatorPublisher;
+import com.satecho.agrosafe.platform.apiservice.irrigation.application.commandservices.IrrigationCommandService;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.exceptions.ActiveSessionExistsException;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.exceptions.NoActiveSessionException;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates.IrrigationSession;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.commands.*;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.valueobjects.IrrigationStatus;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.repositories.IrrigationSessionRepository;
+import com.satecho.agrosafe.platform.apiservice.shared.application.result.ApplicationError;
+import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result;
+import com.satecho.agrosafe.platform.apiservice.shared.infrastructure.mqtt.MqttActuatorPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

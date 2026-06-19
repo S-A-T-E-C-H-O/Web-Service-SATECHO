@@ -1,12 +1,12 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.application.internal.commandservices;
 
-import com.satecho.agrosafe.platform.irrigation.application.commandservices.ScheduleCommandService;
-import com.satecho.agrosafe.platform.irrigation.domain.exceptions.ScheduleNotFoundException;
-import com.satecho.agrosafe.platform.irrigation.domain.model.aggregates.IrrigationSchedule;
-import com.satecho.agrosafe.platform.irrigation.domain.model.commands.*;
-import com.satecho.agrosafe.platform.irrigation.domain.repositories.IrrigationScheduleRepository;
-import com.satecho.agrosafe.platform.shared.application.result.ApplicationError;
-import com.satecho.agrosafe.platform.shared.application.result.Result;
+import com.satecho.agrosafe.platform.apiservice.irrigation.application.commandservices.ScheduleCommandService;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.exceptions.ScheduleNotFoundException;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates.IrrigationSchedule;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.commands.*;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.repositories.IrrigationScheduleRepository;
+import com.satecho.agrosafe.platform.apiservice.shared.application.result.ApplicationError;
+import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

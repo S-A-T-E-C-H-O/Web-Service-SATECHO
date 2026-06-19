@@ -1,10 +1,10 @@
 package com.satecho.agrosafe.platform.apiservice.irrigation.application.internal.queryservices;
 
-import com.satecho.agrosafe.platform.irrigation.application.queryservices.IrrigationQueryService;
-import com.satecho.agrosafe.platform.irrigation.domain.model.aggregates.IrrigationSession;
-import com.satecho.agrosafe.platform.irrigation.domain.model.queries.*;
-import com.satecho.agrosafe.platform.irrigation.domain.model.valueobjects.IrrigationStatus;
-import com.satecho.agrosafe.platform.irrigation.domain.repositories.IrrigationSessionRepository;
+import com.satecho.agrosafe.platform.apiservice.irrigation.application.queryservices.IrrigationQueryService;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.aggregates.IrrigationSession;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.queries.*;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.valueobjects.IrrigationStatus;
+import com.satecho.agrosafe.platform.apiservice.irrigation.domain.repositories.IrrigationSessionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
