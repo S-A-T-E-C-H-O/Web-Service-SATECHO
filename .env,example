@@ -1,0 +1,33 @@
+# ─── Database ───────────────────────────────────────────────
+DATABASE_URL=jdbc:postgresql://localhost:5433/agrosafe_dev
+DATABASE_USER=agrosafe_user
+DATABASE_PASSWORD=
+
+# ─── RabbitMQ ────────────────────────────────────────────────
+RABBITMQ_HOST=localhost
+RABBITMQ_PORT=5672
+RABBITMQ_USER=guest
+RABBITMQ_PASSWORD=
+RABBITMQ_VHOST=/
+
+# ─── Redis ───────────────────────────────────────────────────
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+
+# ─── JWT ─────────────────────────────────────────────────────
+JWT_SECRET=
+
+# ─── MQTT ────────────────────────────────────────────────────
+MQTT_BROKER_URL=tcp://localhost:1883
+MQTT_CLIENT_ID=agrosafe-backend
+MQTT_USERNAME=
+MQTT_PASSWORD=
+
+# ─── Resend (email) ──────────────────────────────────────────
+RESEND_API_KEY=
+RESEND_FROM=onboarding@resend.dev
+
+# ─── App ─────────────────────────────────────────────────────
+APP_BASE_URL=http://localhost:8080
+APP_FRONTEND_URL=http://localhost:5173

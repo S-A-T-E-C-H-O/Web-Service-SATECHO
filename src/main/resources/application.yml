@@ -9,7 +9,7 @@ spring:
     hibernate:
       ddl-auto: validate
       naming:
-        physical-strategy: com.satecho.agrosafe.platform.shared.infrastructure.persistence.jpa.configuration.strategy.SnakeCaseWithPluralizedTablePhysicalNamingStrategy
+        physical-strategy: com.satecho.agrosafe.platform.apiservice.shared.infrastructure.persistence.jpa.configuration.strategy.SnakeCaseWithPluralizedTablePhysicalNamingStrategy
     show-sql: false
     properties:
       hibernate:
@@ -75,7 +75,7 @@ server:
 logging:
   level:
     root: INFO
-    com.agrosafe: DEBUG
+    com.satecho.agrosafe: DEBUG
     org.springframework.security: DEBUG
     org.springframework.amqp: DEBUG
   pattern:

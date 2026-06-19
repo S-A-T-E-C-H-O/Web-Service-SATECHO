@@ -1,10 +1,56 @@
-# Default ignored files
-/shelf/
-.idea/
-# Editor-based HTTP Client requests
-/httpRequests/
-# Ignored default folder with query files
-/queries/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
+# Maven / Java
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+*.class
+*.log
+*.jar
+*.war
+*.ear
+
+# IntelliJ IDEA
+/.idea/
+/*.iml
+/out/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Build tools
+/.gradle/
+/gradle-wrapper.jar
+
+# Environment / secrets
+.env
+.env.*
+*.secret
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Firebase / Service accounts (proteger claves JSON)
+# Ignorar archivo concreto que has añadido
+/src/main/resources/firebase-service-account.json
+# O, si prefieres ignorar cualquier json de service-account:
+# src/main/resources/*service-account*.json
+
+# Spring Boot / application secrets
+# Si tus application-*.yml contienen secretos, ignóralos aquí y mantén plantillas en el repo
+/src/main/resources/application-dev.yml
+/src/main/resources/application-prod.yml
+/src/main/resources/application.properties
+
+# IDE / Editor
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Git
+.gitignore
+
+# Logs, temp
+*.tmp
+*.swp
