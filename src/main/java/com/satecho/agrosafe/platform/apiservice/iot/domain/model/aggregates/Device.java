@@ -3,7 +3,7 @@ package com.satecho.agrosafe.platform.apiservice.iot.domain.model.aggregates;
 import com.satecho.agrosafe.platform.apiservice.iot.domain.model.valueobjects.DeviceCredentials;
 import com.satecho.agrosafe.platform.apiservice.iot.domain.model.valueobjects.DeviceStatus;
 import com.satecho.agrosafe.platform.apiservice.iot.domain.model.valueobjects.DeviceType;
-import com.satecho.agrosafe.platform.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
+import com.satecho.agrosafe.platform.apiservice.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -8,8 +8,8 @@ import com.satecho.agrosafe.platform.apiservice.iot.domain.model.commands.*;
 import com.satecho.agrosafe.platform.apiservice.iot.domain.model.events.HeartbeatReceivedEvent;
 import com.satecho.agrosafe.platform.apiservice.iot.domain.repositories.DeviceRepository;
 import com.satecho.agrosafe.platform.apiservice.iot.interfaces.rest.resources.RegisterDeviceResource;
-import com.satecho.agrosafe.platform.shared.application.result.ApplicationError;
-import com.satecho.agrosafe.platform.shared.application.result.Result;
+import com.satecho.agrosafe.platform.apiservice.shared.application.result.ApplicationError;
+import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
