@@ -2,9 +2,9 @@ package com.satecho.agrosafe.platform.apiservice.shared.infrastructure.mqtt.list
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.satecho.agrosafe.platform.security.application.commandservices.SecurityCommandService;
-import com.satecho.agrosafe.platform.security.domain.model.commands.IngestSecurityEventCommand;
-import com.satecho.agrosafe.platform.security.domain.model.valueobjects.EventClassification;
+import com.satecho.agrosafe.platform.apiservice.security.application.commandservices.SecurityCommandService;
+import com.satecho.agrosafe.platform.apiservice.security.domain.model.commands.IngestSecurityEventCommand;
+import com.satecho.agrosafe.platform.apiservice.security.domain.model.valueobjects.EventClassification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

@@ -8,9 +8,9 @@ import com.satecho.agrosafe.platform.apiservice.iot.domain.model.valueobjects.De
 import com.satecho.agrosafe.platform.apiservice.iot.domain.model.valueobjects.DeviceType;
 import com.satecho.agrosafe.platform.apiservice.iot.interfaces.rest.resources.*;
 import com.satecho.agrosafe.platform.apiservice.iot.interfaces.rest.transform.*;
-import com.satecho.agrosafe.platform.shared.infrastructure.security.SecurityContextUtil;
-import com.satecho.agrosafe.platform.shared.interfaces.rest.resources.MessageResource;
-import com.satecho.agrosafe.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
+import com.satecho.agrosafe.platform.apiservice.shared.infrastructure.security.SecurityContextUtil;
+import com.satecho.agrosafe.platform.apiservice.shared.interfaces.rest.resources.MessageResource;
+import com.satecho.agrosafe.platform.apiservice.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
