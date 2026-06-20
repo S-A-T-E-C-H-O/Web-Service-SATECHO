@@ -1,6 +1,6 @@
 package com.satecho.agrosafe.platform.apiservice.iot.domain.exceptions;
 
-import com.satecho.agrosafe.platform.shared.domain.exception.AgroSafeException;
+import com.satecho.agrosafe.platform.apiservice.shared.domain.exception.AgroSafeException;
 
 public class DeviceNotFoundException extends AgroSafeException {
     public DeviceNotFoundException(Long deviceId) { super("Device not found with id: " + deviceId); }
