@@ -1,6 +1,6 @@
 package com.satecho.agrosafe.platform.apiservice.soil.infrastructure.persistence.jpa.entities;
 
-import com.satecho.agrosafe.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
+import com.satecho.agrosafe.platform.apiservice.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

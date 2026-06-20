@@ -2,7 +2,7 @@ package com.satecho.agrosafe.platform.apiservice.iot.infrastructure.persistence.
 
 import com.satecho.agrosafe.platform.apiservice.iot.domain.model.valueobjects.DeviceStatus;
 import com.satecho.agrosafe.platform.apiservice.iot.domain.model.valueobjects.DeviceType;
-import com.satecho.agrosafe.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
+import com.satecho.agrosafe.platform.apiservice.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
