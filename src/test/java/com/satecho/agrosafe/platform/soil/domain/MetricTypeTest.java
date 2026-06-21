@@ -1,6 +1,6 @@
 package com.satecho.agrosafe.platform.soil.domain;
 
-import com.satecho.agrosafe.platform.soil.domain.model.valueobjects.MetricType;
+import com.satecho.agrosafe.platform.apiservice.soil.domain.model.valueobjects.MetricType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

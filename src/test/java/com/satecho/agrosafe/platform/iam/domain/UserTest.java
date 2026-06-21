@@ -1,8 +1,8 @@
 package com.satecho.agrosafe.platform.iam.domain;
 
-import com.satecho.agrosafe.platform.iam.domain.model.aggregates.User;
-import com.satecho.agrosafe.platform.iam.domain.model.entities.Role;
-import com.satecho.agrosafe.platform.iam.domain.model.valueobjects.Roles;
+import com.satecho.agrosafe.platform.apiservice.iam.domain.model.aggregates.User;
+import com.satecho.agrosafe.platform.apiservice.iam.domain.model.entities.Role;
+import com.satecho.agrosafe.platform.apiservice.iam.domain.model.valueobjects.Roles;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
