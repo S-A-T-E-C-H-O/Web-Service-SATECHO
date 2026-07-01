@@ -47,7 +47,7 @@ public class TelemetryCommandServiceImpl implements TelemetryCommandService {
         int ingested = 0;
         for (var reading : command.readings()) {
             var result = ingestTelemetry(reading);
-            if (result.isFailure()) return Result.failure(result.toOptional().isPresent() ? null : ApplicationError.validationError("batch", "Ingest failed"));
+            if (result instanceof Result.Failure<SensorReading, ApplicationError> f) return Result.failure(f.error());
             ingested++;
         }
         return Result.success(ingested);

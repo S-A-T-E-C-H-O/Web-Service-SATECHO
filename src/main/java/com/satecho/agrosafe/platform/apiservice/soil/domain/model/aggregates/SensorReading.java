@@ -11,12 +11,12 @@ import java.time.Instant;
 @Getter
 public class SensorReading extends AuditableAbstractAggregateRoot<SensorReading> {
     @Setter private Long id;
-    @Setter private Long deviceId;
-    @Setter private Long zoneId;
-    @Setter private ReadingValue readingValue;
-    @Setter private Instant timestamp;
-    @Setter private Instant ingestedAt;
-    @Setter private Boolean isValid;
+    private Long deviceId;
+    private Long zoneId;
+    private ReadingValue readingValue;
+    private Instant timestamp;
+    private Instant ingestedAt;
+    private Boolean isValid;
 
     public SensorReading() {}
 
