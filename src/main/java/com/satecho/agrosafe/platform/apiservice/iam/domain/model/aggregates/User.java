@@ -14,13 +14,13 @@ import java.util.Set;
 public class User extends AuditableAbstractAggregateRoot<User> {
 
     @Setter private Long id;
-    @Setter private String email;
-    @Setter private String password;
-    @Setter private String fullName;
-    @Setter private Set<Role> roles;
+    private String email;
+    private String password;
+    private String fullName;
+    private Set<Role> roles;
     @Setter private Boolean verified;
     @Setter private String verificationToken;
-    @Setter private Date createdAt;
+    private Date createdAt;
 
     public User() {
         this.roles = new HashSet<>();
