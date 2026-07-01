@@ -15,10 +15,12 @@ import com.satecho.agrosafe.platform.apiservice.shared.application.result.Applic
 import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @Service
+@Transactional
 public class UserCommandServiceImpl implements UserCommandService {
 
     private final UserRepository userRepository;

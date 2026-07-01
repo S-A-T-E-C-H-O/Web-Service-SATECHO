@@ -13,25 +13,12 @@ import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-/**
- * Global exception handler for REST API.
- * Provides centralized exception handling for the entire application,
- * ensuring all unhandled exceptions are translated to consistent
- * HTTP responses via the shared error assembly pattern.
- */
 @RestControllerAdvice
 @NullMarked
 public class GlobalExceptionHandler {
 
     private static final String MESSAGES_BASENAME = "messages";
 
-    /**
-     * Handles validation exceptions from Spring's request body validation.
-     * Maps validation failure to a standardized error response.
-     *
-     * @param ex the validation exception from @Valid binding
-     * @return error response with BAD_REQUEST status
-     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         var fieldErrors = ex.getBindingResult().getFieldErrors();
@@ -51,12 +38,6 @@ public class GlobalExceptionHandler {
         return ErrorResponseAssembler.toErrorResponseFromApplicationError(applicationError);
     }
 
-    /**
-     * Handles invalid request arguments such as malformed UUID path or payload values.
-     *
-     * @param ex the illegal argument exception
-     * @return error response with BAD_REQUEST status
-     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex) {
         var applicationError = ApplicationError.validationError(
@@ -66,13 +47,6 @@ public class GlobalExceptionHandler {
         return ErrorResponseAssembler.toErrorResponseFromApplicationError(applicationError);
     }
 
-    /**
-     * Handles unexpected runtime exceptions not caught by specific handlers.
-     * Maps to a generic unexpected error response.
-     *
-     * @param ex the unhandled runtime exception
-     * @return error response with INTERNAL_SERVER_ERROR status
-     */
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
         var applicationError = ApplicationError.unexpected(
@@ -82,13 +56,6 @@ public class GlobalExceptionHandler {
         return ErrorResponseAssembler.toErrorResponseFromApplicationError(applicationError);
     }
 
-    /**
-     * Handles all other exceptions not matched by specific handlers.
-     * Provides a final fallback for any unexpected exception type.
-     *
-     * @param ex the exception
-     * @return error response with INTERNAL_SERVER_ERROR status
-     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleException(Exception ex) {
         var applicationError = ApplicationError.unexpected(

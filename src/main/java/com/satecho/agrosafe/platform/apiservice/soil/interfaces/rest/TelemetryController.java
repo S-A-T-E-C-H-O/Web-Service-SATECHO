@@ -1,7 +1,10 @@
 package com.satecho.agrosafe.platform.apiservice.soil.interfaces.rest;
 
+import com.satecho.agrosafe.platform.apiservice.shared.application.result.ApplicationError;
+import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result;
 import com.satecho.agrosafe.platform.apiservice.soil.application.commandservices.TelemetryCommandService;
 import com.satecho.agrosafe.platform.apiservice.soil.application.queryservices.TelemetryQueryService;
+import com.satecho.agrosafe.platform.apiservice.soil.domain.model.aggregates.SensorReading;
 import com.satecho.agrosafe.platform.apiservice.soil.domain.model.commands.BatchIngestCommand;
 import com.satecho.agrosafe.platform.apiservice.soil.domain.model.commands.IngestTelemetryCommand;
 import com.satecho.agrosafe.platform.apiservice.soil.domain.model.queries.*;
@@ -10,6 +13,7 @@ import com.satecho.agrosafe.platform.apiservice.soil.interfaces.rest.resources.*
 import com.satecho.agrosafe.platform.apiservice.soil.interfaces.rest.transform.*;
 import com.satecho.agrosafe.platform.apiservice.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,22 +39,25 @@ public class TelemetryController {
     }
 
     @PostMapping
-    public ResponseEntity<?> ingestTelemetry(@RequestBody BatchIngestResource resource) {
+    public ResponseEntity<?> ingestTelemetry(@RequestBody @Valid BatchIngestResource resource) {
         var command = new IngestTelemetryCommand(resource.deviceId(), resource.zoneId(), resource.metricType(), resource.value(), resource.timestamp());
         var result = telemetryCommandService.ingestTelemetry(command);
         return ResponseEntityAssembler.toResponseEntityFromResult(result, SensorReadingResourceFromEntityAssembler::toResourceFromEntity, HttpStatus.CREATED);
     }
 
     @PostMapping("/batch")
-    public ResponseEntity<BatchIngestSummaryResource> batchIngest(@RequestBody List<BatchIngestResource> resources) {
+    public ResponseEntity<BatchIngestSummaryResource> batchIngest(@RequestBody @Valid List<BatchIngestResource> resources) {
         List<String> errors = new ArrayList<>();
         int ingested = 0, failed = 0;
         var command = BatchIngestCommandFromResourceAssembler.toCommandFromResources(resources);
-        for (int i = 0; i < resources.size(); i++) {
-            try {
-                telemetryCommandService.ingestTelemetry(command.readings().get(i));
+        for (int i = 0; i < command.readings().size(); i++) {
+            var result = telemetryCommandService.ingestTelemetry(command.readings().get(i));
+            if (result.isSuccess()) {
                 ingested++;
-            } catch (Exception e) { failed++; errors.add("Reading[" + i + "]: " + e.getMessage()); }
+            } else if (result instanceof Result.Failure<SensorReading, ApplicationError> f) {
+                failed++;
+                errors.add("Reading[" + i + "]: " + f.error().message());
+            }
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(new BatchIngestSummaryResource(ingested, failed, errors));
     }
