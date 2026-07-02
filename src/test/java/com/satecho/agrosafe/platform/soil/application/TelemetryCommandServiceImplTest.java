@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.Instant;
 import java.util.List;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.when;
 class TelemetryCommandServiceImplTest {
 
     @Mock SensorReadingRepository sensorReadingRepository;
+    @Mock ApplicationEventPublisher eventPublisher;
     @InjectMocks TelemetryCommandServiceImpl service;
 
     private SensorReading savedReading(Long deviceId, Long zoneId, MetricType type, double value) {
