@@ -44,4 +44,16 @@ public final class SecurityContextUtil {
         throw new IllegalStateException(
                 "Unexpected principal type: " + (principal != null ? principal.getClass().getName() : "null"));
     }
+
+    /**
+     * True when the current authenticated principal holds ROLE_ADMIN, which is
+     * allowed to bypass per-resource ownership checks (fleet administrators,
+     * platform admins).
+     */
+    public static boolean isAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) return false;
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+    }
 }
