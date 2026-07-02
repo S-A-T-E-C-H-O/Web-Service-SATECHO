@@ -3,7 +3,9 @@ package com.satecho.agrosafe.platform.apiservice.agronomist.interfaces.rest;
 import com.satecho.agrosafe.platform.apiservice.agronomist.application.commandservices.FieldVisitCommandService;
 import com.satecho.agrosafe.platform.apiservice.agronomist.application.queryservices.FieldVisitQueryService;
 import com.satecho.agrosafe.platform.apiservice.agronomist.domain.model.aggregates.FieldVisit;
+import com.satecho.agrosafe.platform.apiservice.agronomist.domain.model.commands.CompleteFieldVisitCommand;
 import com.satecho.agrosafe.platform.apiservice.agronomist.domain.model.commands.ScheduleFieldVisitCommand;
+import com.satecho.agrosafe.platform.apiservice.agronomist.interfaces.rest.resources.CompleteFieldVisitResource;
 import com.satecho.agrosafe.platform.apiservice.agronomist.interfaces.rest.resources.FieldVisitResource;
 import com.satecho.agrosafe.platform.apiservice.agronomist.interfaces.rest.resources.ScheduleFieldVisitResource;
 import com.satecho.agrosafe.platform.apiservice.iam.application.queryservices.UserQueryService;
@@ -53,15 +55,20 @@ public class FieldVisitController {
         Long agronomistUserId = SecurityContextUtil.getCurrentUserId();
         Instant scheduledAt = resource.scheduledAt() != null ? Instant.parse(resource.scheduledAt()) : null;
         var command = new ScheduleFieldVisitCommand(agronomistUserId, resource.farmId(), scheduledAt,
-                resource.tag(), resource.noteTitle(), resource.noteBody(), resource.urgent());
+                resource.tag(), resource.noteTitle(), resource.noteBody(), resource.urgent(),
+                resource.latitude(), resource.longitude(), resource.photoBase64());
         var result = fieldVisitCommandService.scheduleVisit(command);
         return ResponseEntityAssembler.toResponseEntityFromResult(result, this::toResource, HttpStatus.CREATED);
     }
 
     @PostMapping("/{visitId}/complete")
-    public ResponseEntity<?> completeVisit(@PathVariable Long visitId) {
+    public ResponseEntity<?> completeVisit(@PathVariable Long visitId,
+                                            @RequestBody(required = false) CompleteFieldVisitResource resource) {
         Long agronomistUserId = SecurityContextUtil.getCurrentUserId();
-        var result = fieldVisitCommandService.completeVisit(visitId, agronomistUserId);
+        var body = resource != null ? resource : new CompleteFieldVisitResource(null, null, null);
+        var command = new CompleteFieldVisitCommand(visitId, agronomistUserId, body.latitude(), body.longitude(),
+                body.photoBase64());
+        var result = fieldVisitCommandService.completeVisit(command);
         return ResponseEntityAssembler.toResponseEntityFromResult(result, this::toResource, HttpStatus.OK);
     }
 
@@ -73,6 +80,7 @@ public class FieldVisitController {
                 : null;
         return new FieldVisitResource(v.getId(), v.getFarmId(), farmName, ownerName,
                 v.getScheduledAt() != null ? v.getScheduledAt().toString() : null,
-                v.getTag(), v.getNoteTitle(), v.getNoteBody(), v.getUrgent());
+                v.getTag(), v.getNoteTitle(), v.getNoteBody(), v.getUrgent(), v.getCompleted(),
+                v.getLatitude(), v.getLongitude(), v.getPhotoBase64());
     }
 }

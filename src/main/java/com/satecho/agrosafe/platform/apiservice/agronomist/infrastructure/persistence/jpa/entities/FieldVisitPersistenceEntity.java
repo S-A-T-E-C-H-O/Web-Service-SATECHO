@@ -38,4 +38,6 @@ public class FieldVisitPersistenceEntity extends AuditableAbstractPersistenceEnt
     private Double latitude;
     @Column(name = "longitude")
     private Double longitude;
+    @Column(name = "photo_base64", columnDefinition = "TEXT")
+    private String photoBase64;
 }

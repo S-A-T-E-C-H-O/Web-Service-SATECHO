@@ -21,6 +21,7 @@ public final class FieldVisitPersistenceAssembler {
         d.setCompletedAt(e.getCompletedAt());
         d.setLatitude(e.getLatitude());
         d.setLongitude(e.getLongitude());
+        d.setPhotoBase64(e.getPhotoBase64());
         return d;
     }
 
@@ -39,6 +40,7 @@ public final class FieldVisitPersistenceAssembler {
         e.setCompletedAt(d.getCompletedAt());
         e.setLatitude(d.getLatitude());
         e.setLongitude(d.getLongitude());
+        e.setPhotoBase64(d.getPhotoBase64());
         return e;
     }
 }
