@@ -35,6 +35,24 @@ public class UserPersistenceEntity extends AuditableAbstractPersistenceEntity {
     @Column(name = "verification_token", length = 64)
     private String verificationToken;
 
+    @Column(name = "reset_token", length = 64)
+    private String resetToken;
+
+    @Column(name = "reset_token_expires_at")
+    private java.time.Instant resetTokenExpiresAt;
+
+    @Column(name = "registration_number", length = 50)
+    private String registrationNumber;
+
+    @Column(name = "specialty", length = 100)
+    private String specialty;
+
+    @Column(name = "years_of_experience")
+    private Integer yearsOfExperience;
+
+    @Column(name = "blocked", nullable = false, columnDefinition = "boolean default false")
+    private Boolean blocked = false;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

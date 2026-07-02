@@ -9,6 +9,7 @@ public record UserResource(
         String email,
         List<String> roles,
         Boolean verified,
+        Boolean blocked,
         Date createdAt
 ) {
 }
