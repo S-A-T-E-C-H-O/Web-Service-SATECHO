@@ -1,7 +1,10 @@
 package com.satecho.agrosafe.platform.apiservice.communication.infrastructure.persisstence.jpa.entities;
 
 import com.satecho.agrosafe.platform.apiservice.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,5 +28,3 @@ public class DeviceTokenPersistenceEntity extends AuditableAbstractPersistenceEn
     @Column(name = "last_seen_at", nullable = false)
     private Instant lastSeenAt;
 }
-
-
