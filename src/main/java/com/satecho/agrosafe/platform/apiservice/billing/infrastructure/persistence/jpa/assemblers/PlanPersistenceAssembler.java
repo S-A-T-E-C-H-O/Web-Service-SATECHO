@@ -16,7 +16,6 @@ public final class PlanPersistenceAssembler {
         d.setName(e.getName());
         d.setPriceMonthly(e.getPriceMonthly());
         d.setMaxDevices(e.getMaxDevices());
-        d.setMaxHectares(e.getMaxHectares());
         d.setMaxFarms(e.getMaxFarms());
         d.setFeatures(e.getFeatures() != null ? new ArrayList<>(e.getFeatures()) : new ArrayList<>());
         return d;
@@ -30,7 +29,6 @@ public final class PlanPersistenceAssembler {
         e.setName(d.getName());
         e.setPriceMonthly(d.getPriceMonthly());
         e.setMaxDevices(d.getMaxDevices());
-        e.setMaxHectares(d.getMaxHectares());
         e.setMaxFarms(d.getMaxFarms());
         e.setFeatures(d.getFeatures() != null ? new ArrayList<>(d.getFeatures()) : new ArrayList<>());
         return e;

@@ -7,6 +7,7 @@ import com.satecho.agrosafe.platform.apiservice.billing.domain.model.commands.Su
 import com.satecho.agrosafe.platform.apiservice.billing.domain.repositories.InvoiceRepository;
 import com.satecho.agrosafe.platform.apiservice.billing.domain.repositories.PlanRepository;
 import com.satecho.agrosafe.platform.apiservice.billing.domain.repositories.SubscriptionRepository;
+import com.satecho.agrosafe.platform.apiservice.iot.domain.repositories.DeviceRepository;
 import com.satecho.agrosafe.platform.apiservice.shared.application.result.ApplicationError;
 import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,14 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
     private final SubscriptionRepository subscriptionRepository;
     private final PlanRepository planRepository;
     private final InvoiceRepository invoiceRepository;
+    private final DeviceRepository deviceRepository;
 
     public SubscriptionCommandServiceImpl(SubscriptionRepository subscriptionRepository, PlanRepository planRepository,
-                                           InvoiceRepository invoiceRepository) {
+                                           InvoiceRepository invoiceRepository, DeviceRepository deviceRepository) {
         this.subscriptionRepository = subscriptionRepository;
         this.planRepository = planRepository;
         this.invoiceRepository = invoiceRepository;
+        this.deviceRepository = deviceRepository;
     }
 
     @Override
@@ -32,6 +35,18 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
         var plan = planRepository.findByTier(command.planTier());
         if (plan.isEmpty()) {
             return Result.failure(ApplicationError.notFound("Plan", command.planTier().name()));
+        }
+
+        // EP-006-US014 Scenario 3: block a downgrade that would leave the farmer
+        // with more active devices than the destination plan allows.
+        if (plan.get().getMaxDevices() != null) {
+            int currentDeviceCount = deviceRepository.findByUserId(command.userId()).size();
+            if (currentDeviceCount > plan.get().getMaxDevices()) {
+                return Result.failure(ApplicationError.conflict("Subscription",
+                        "You have " + currentDeviceCount + " active devices, which exceeds the " +
+                                plan.get().getName() + " plan's limit of " + plan.get().getMaxDevices() +
+                                ". Deactivate devices before downgrading."));
+            }
         }
 
         var subscription = subscriptionRepository.findByUserId(command.userId())

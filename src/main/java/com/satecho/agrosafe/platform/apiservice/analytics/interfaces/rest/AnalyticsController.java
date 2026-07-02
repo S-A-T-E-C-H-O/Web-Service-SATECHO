@@ -42,7 +42,9 @@ public class AnalyticsController {
                 .map(f -> new FarmerDashboardResource.FarmResource(f.id(), f.name(), f.location(), f.cropType(), f.hectares()))
                 .toList();
         return ResponseEntity.ok(new FarmerDashboardResource(dashboard.totalZones(), dashboard.onlineDevices(),
-                dashboard.offlineDevices(), dashboard.errorDevices(), farms));
+                dashboard.offlineDevices(), dashboard.errorDevices(), farms, dashboard.avgMoisture7d(),
+                dashboard.avgEc7d(), dashboard.weeklyIrrigationHours(), dashboard.activeAlertCount(),
+                dashboard.criticalMoisture()));
     }
 
     @GetMapping("/analytics/parcels/compare")
