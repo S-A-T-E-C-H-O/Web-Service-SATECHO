@@ -35,7 +35,7 @@ public class NotificationPreference extends AuditableAbstractAggregateRoot<Notif
     public static NotificationPreference createDefault(Long userId, NotificationType notificationType) {
         List<NotificationChannel> defaultChannels = switch (notificationType) {
             case SECURITY_ALERT -> List.of(NotificationChannel.PUSH, NotificationChannel.WHATSAPP);
-            case IRRIGATION_ALERT, EC_ALERT -> List.of(NotificationChannel.PUSH);
+            case IRRIGATION_ALERT, EC_ALERT, TEMPERATURE_ALERT -> List.of(NotificationChannel.PUSH);
             case LOW_BATTERY, MAINTENANCE -> List.of(NotificationChannel.PUSH, NotificationChannel.EMAIL);
             case SYSTEM, DAILY_SUMMARY -> List.of(NotificationChannel.EMAIL);
         };

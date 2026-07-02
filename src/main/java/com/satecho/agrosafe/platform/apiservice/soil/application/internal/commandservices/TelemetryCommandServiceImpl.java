@@ -10,6 +10,7 @@ import com.satecho.agrosafe.platform.apiservice.soil.domain.model.valueobjects.M
 import com.satecho.agrosafe.platform.apiservice.soil.domain.repositories.SensorReadingRepository;
 import com.satecho.agrosafe.platform.apiservice.shared.application.result.ApplicationError;
 import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,9 +21,11 @@ import java.time.Instant;
 public class TelemetryCommandServiceImpl implements TelemetryCommandService {
 
     private final SensorReadingRepository sensorReadingRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public TelemetryCommandServiceImpl(SensorReadingRepository sensorReadingRepository) {
+    public TelemetryCommandServiceImpl(SensorReadingRepository sensorReadingRepository, ApplicationEventPublisher eventPublisher) {
         this.sensorReadingRepository = sensorReadingRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -39,6 +42,12 @@ public class TelemetryCommandServiceImpl implements TelemetryCommandService {
         saved.addDomainEvent(new TelemetryReceivedEvent(saved.getId(), saved.getDeviceId(), saved.getZoneId(),
                 saved.getMetricType().name(), saved.getValue(), saved.getTimestamp()));
         checkThresholds(saved);
+        // AbstractAggregateRoot events are only auto-published by Spring Data when the aggregate
+        // itself is the JpaRepository's managed type. Here the repository adapter persists a
+        // separate JPA entity and returns a freshly reassembled domain instance, so that
+        // mechanism never fires — publish explicitly instead.
+        saved.domainEvents().forEach(eventPublisher::publishEvent);
+        saved.clearDomainEvents();
         return Result.success(saved);
     }
 
