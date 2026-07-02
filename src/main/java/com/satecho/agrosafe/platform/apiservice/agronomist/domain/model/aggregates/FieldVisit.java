@@ -25,6 +25,7 @@ public class FieldVisit extends AuditableAbstractAggregateRoot<FieldVisit> {
     @Setter private Instant completedAt;
     @Setter private Double latitude;
     @Setter private Double longitude;
+    @Setter private String photoBase64;
 
     public FieldVisit() {}
 
@@ -50,5 +51,10 @@ public class FieldVisit extends AuditableAbstractAggregateRoot<FieldVisit> {
     public void recordLocation(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    /** JPEG captured on-device, base64-encoded — no object storage configured for this project yet. */
+    public void attachPhoto(String photoBase64) {
+        this.photoBase64 = photoBase64;
     }
 }
