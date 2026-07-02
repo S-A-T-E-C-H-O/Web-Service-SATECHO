@@ -4,6 +4,7 @@ public enum NotificationType {
     IRRIGATION_ALERT,
     SECURITY_ALERT,
     EC_ALERT,
+    TEMPERATURE_ALERT,
     LOW_BATTERY,
     MAINTENANCE,
     SYSTEM,
