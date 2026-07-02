@@ -20,4 +20,8 @@ public interface UserRepository {
     boolean existsByEmail(String email);
 
     Optional<User> findByVerificationToken(String token);
+
+    Optional<User> findByResetToken(String resetToken);
+
+    boolean existsByRegistrationNumber(String registrationNumber);
 }

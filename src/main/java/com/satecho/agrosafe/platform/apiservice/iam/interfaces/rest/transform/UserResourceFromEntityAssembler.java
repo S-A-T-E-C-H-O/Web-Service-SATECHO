@@ -12,6 +12,7 @@ public class UserResourceFromEntityAssembler {
                 .map(role -> role.getStringName())
                 .toList();
         return new UserResource(user.getId(), user.getFullName(), user.getEmail(), roles,
-                user.getVerified() != null ? user.getVerified() : true, user.getCreatedAt());
+                user.getVerified() != null ? user.getVerified() : true,
+                user.getBlocked() != null ? user.getBlocked() : false, user.getCreatedAt());
     }
 }

@@ -14,6 +14,7 @@ public class SignUpCommandFromResourceAssembler {
         var roles = resource.roles() != null
                 ? resource.roles().stream().map(Role::toRoleFromName).toList()
                 : new ArrayList<Role>();
-        return new SignUpCommand(resource.fullName(), resource.email(), resource.password(), roles);
+        return new SignUpCommand(resource.fullName(), resource.email(), resource.password(), roles,
+                resource.registrationNumber(), resource.specialty(), resource.yearsOfExperience());
     }
 }

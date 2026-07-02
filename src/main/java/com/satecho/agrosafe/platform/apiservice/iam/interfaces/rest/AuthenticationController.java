@@ -1,8 +1,12 @@
 package com.satecho.agrosafe.platform.apiservice.iam.interfaces.rest;
 
 import com.satecho.agrosafe.platform.apiservice.iam.application.commandservices.UserCommandService;
+import com.satecho.agrosafe.platform.apiservice.iam.domain.model.commands.ForgotPasswordCommand;
 import com.satecho.agrosafe.platform.apiservice.iam.domain.model.commands.ResendVerificationCommand;
+import com.satecho.agrosafe.platform.apiservice.iam.domain.model.commands.ResetPasswordCommand;
 import com.satecho.agrosafe.platform.apiservice.iam.domain.model.commands.VerifyAccountCommand;
+import com.satecho.agrosafe.platform.apiservice.iam.interfaces.rest.resources.ForgotPasswordResource;
+import com.satecho.agrosafe.platform.apiservice.iam.interfaces.rest.resources.ResetPasswordResource;
 import com.satecho.agrosafe.platform.apiservice.iam.interfaces.rest.resources.SignInResource;
 import com.satecho.agrosafe.platform.apiservice.iam.interfaces.rest.resources.SignUpResource;
 import com.satecho.agrosafe.platform.apiservice.iam.interfaces.rest.transform.AuthenticatedUserResourceFromEntityAssembler;
@@ -76,5 +80,23 @@ public class AuthenticationController {
         var result = userCommandService.resendVerification(command);
         return ResponseEntityAssembler.toResponseEntityFromResult(
                 result, v -> Map.of("message", "Verification email sent"), HttpStatus.OK);
+    }
+
+    /**
+     * Always responds 200 regardless of whether the email exists (anti-enumeration).
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordResource resource) {
+        var result = userCommandService.forgotPassword(new ForgotPasswordCommand(resource.email()));
+        return ResponseEntityAssembler.toResponseEntityFromResult(
+                result, v -> Map.of("message", "If the email exists, a reset link has been sent"), HttpStatus.OK);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordResource resource) {
+        var command = new ResetPasswordCommand(resource.token(), resource.newPassword());
+        var result = userCommandService.resetPassword(command);
+        return ResponseEntityAssembler.toResponseEntityFromResult(
+                result, v -> Map.of("message", "Password updated successfully"), HttpStatus.OK);
     }
 }
