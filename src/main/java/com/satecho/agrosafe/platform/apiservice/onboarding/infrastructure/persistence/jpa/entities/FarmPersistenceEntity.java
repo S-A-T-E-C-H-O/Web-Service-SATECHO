@@ -29,4 +29,7 @@ public class FarmPersistenceEntity extends AuditableAbstractPersistenceEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "crop_type", nullable = false, length = 30)
     private CropType cropType;
+
+    @Column(name = "active", nullable = false, columnDefinition = "boolean default true")
+    private Boolean active = true;
 }

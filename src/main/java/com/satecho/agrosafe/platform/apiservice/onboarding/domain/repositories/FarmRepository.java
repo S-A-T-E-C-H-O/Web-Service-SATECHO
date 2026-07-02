@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface FarmRepository {
     Optional<Farm> findById(Long id);
     List<Farm> findAllByUserId(Long userId);
+    List<Farm> findAll();
     Farm save(Farm farm);
     void deleteById(Long id);
     boolean existsById(Long id);

@@ -8,6 +8,8 @@ import com.satecho.agrosafe.platform.apiservice.soil.domain.model.events.Telemet
 import com.satecho.agrosafe.platform.apiservice.soil.domain.model.events.ThresholdBreachedEvent;
 import com.satecho.agrosafe.platform.apiservice.soil.domain.model.valueobjects.MetricType;
 import com.satecho.agrosafe.platform.apiservice.soil.domain.repositories.SensorReadingRepository;
+import com.satecho.agrosafe.platform.apiservice.onboarding.application.queryservices.FarmQueryService;
+import com.satecho.agrosafe.platform.apiservice.onboarding.application.queryservices.ZoneQueryService;
 import com.satecho.agrosafe.platform.apiservice.shared.application.result.ApplicationError;
 import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result;
 import org.springframework.context.ApplicationEventPublisher;
@@ -22,10 +24,15 @@ public class TelemetryCommandServiceImpl implements TelemetryCommandService {
 
     private final SensorReadingRepository sensorReadingRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final ZoneQueryService zoneQueryService;
+    private final FarmQueryService farmQueryService;
 
-    public TelemetryCommandServiceImpl(SensorReadingRepository sensorReadingRepository, ApplicationEventPublisher eventPublisher) {
+    public TelemetryCommandServiceImpl(SensorReadingRepository sensorReadingRepository, ApplicationEventPublisher eventPublisher,
+                                        ZoneQueryService zoneQueryService, FarmQueryService farmQueryService) {
         this.sensorReadingRepository = sensorReadingRepository;
         this.eventPublisher = eventPublisher;
+        this.zoneQueryService = zoneQueryService;
+        this.farmQueryService = farmQueryService;
     }
 
     @Override
@@ -35,6 +42,16 @@ public class TelemetryCommandServiceImpl implements TelemetryCommandService {
                     String.format("Value %.2f is out of valid range [%.2f, %.2f] for %s",
                             command.value(), command.metricType().getMinValid(),
                             command.metricType().getMaxValid(), command.metricType().name())));
+        }
+        // EP-011-US002 Scenario 2: a deactivated farm stops accepting telemetry from its devices.
+        if (command.zoneId() != null) {
+            var farmInactive = zoneQueryService.findById(command.zoneId())
+                    .flatMap(zone -> farmQueryService.findById(zone.getFarmId()))
+                    .map(farm -> !farm.isActive())
+                    .orElse(false);
+            if (farmInactive) {
+                return Result.failure(ApplicationError.forbidden("farm", "This farm has been deactivated by an administrator"));
+            }
         }
         Instant timestamp = command.timestamp() != null ? command.timestamp() : Instant.now();
         var reading = new SensorReading(command.deviceId(), command.zoneId(), command.metricType(), command.value(), timestamp);
@@ -56,7 +73,7 @@ public class TelemetryCommandServiceImpl implements TelemetryCommandService {
         int ingested = 0;
         for (var reading : command.readings()) {
             var result = ingestTelemetry(reading);
-            if (result instanceof Result.Failure<SensorReading, ApplicationError> f) return Result.failure(f.error());
+            if (result.isFailure()) return Result.failure(result.toOptional().isPresent() ? null : ApplicationError.validationError("batch", "Ingest failed"));
             ingested++;
         }
         return Result.success(ingested);

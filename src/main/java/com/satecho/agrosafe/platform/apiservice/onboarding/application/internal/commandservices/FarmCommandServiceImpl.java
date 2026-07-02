@@ -61,4 +61,18 @@ public class FarmCommandServiceImpl implements FarmCommandService {
         farmRepository.deleteById(farmId);
         return Result.success(null);
     }
+
+    @Override
+    public Result<Farm, ApplicationError> deactivateFarm(Long farmId) {
+        var farm = farmRepository.findById(farmId).orElseThrow(() -> new FarmNotFoundException(farmId));
+        farm.deactivate();
+        return Result.success(farmRepository.save(farm));
+    }
+
+    @Override
+    public Result<Farm, ApplicationError> reactivateFarm(Long farmId) {
+        var farm = farmRepository.findById(farmId).orElseThrow(() -> new FarmNotFoundException(farmId));
+        farm.reactivate();
+        return Result.success(farmRepository.save(farm));
+    }
 }

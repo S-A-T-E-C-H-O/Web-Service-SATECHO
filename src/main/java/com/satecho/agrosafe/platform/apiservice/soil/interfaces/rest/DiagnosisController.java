@@ -9,6 +9,7 @@ import com.satecho.agrosafe.platform.apiservice.soil.interfaces.rest.resources.D
 import com.satecho.agrosafe.platform.apiservice.soil.interfaces.rest.resources.SoilHealthResource;
 import com.satecho.agrosafe.platform.apiservice.soil.interfaces.rest.transform.DiagnosisResourceFromEntityAssembler;
 import com.satecho.agrosafe.platform.apiservice.soil.interfaces.rest.transform.SoilHealthResourceFromEntityAssembler;
+import com.satecho.agrosafe.platform.apiservice.shared.infrastructure.security.ResourceOwnershipService;
 import com.satecho.agrosafe.platform.apiservice.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
@@ -25,14 +26,18 @@ public class DiagnosisController {
 
     private final DiagnosisCommandService diagnosisCommandService;
     private final DiagnosisQueryService diagnosisQueryService;
+    private final ResourceOwnershipService ownershipService;
 
-    public DiagnosisController(DiagnosisCommandService diagnosisCommandService, DiagnosisQueryService diagnosisQueryService) {
+    public DiagnosisController(DiagnosisCommandService diagnosisCommandService, DiagnosisQueryService diagnosisQueryService,
+                                ResourceOwnershipService ownershipService) {
         this.diagnosisCommandService = diagnosisCommandService;
         this.diagnosisQueryService = diagnosisQueryService;
+        this.ownershipService = ownershipService;
     }
 
     @PostMapping("/diagnosis/{zoneId}")
     public ResponseEntity<?> generateDiagnosis(@PathVariable Long zoneId) {
+        if (!ownershipService.isZoneOwnerOrAdmin(zoneId)) return ResponseEntity.status(403).build();
         var result = diagnosisCommandService.generateDiagnosis(new GenerateDiagnosisCommand(zoneId));
         return ResponseEntityAssembler.toResponseEntityFromResult(result, DiagnosisResourceFromEntityAssembler::toResourceFromEntity, HttpStatus.OK);
     }
@@ -41,11 +46,13 @@ public class DiagnosisController {
     public ResponseEntity<DiagnosisResource> getDiagnosisById(@PathVariable Long diagnosisId) {
         var diagnosis = diagnosisQueryService.findById(new GetDiagnosisQuery(diagnosisId))
                 .orElseThrow(() -> new DiagnosisNotFoundException(diagnosisId));
+        if (!ownershipService.isZoneOwnerOrAdmin(diagnosis.getZoneId())) return ResponseEntity.status(403).build();
         return ResponseEntity.ok(DiagnosisResourceFromEntityAssembler.toResourceFromEntity(diagnosis));
     }
 
     @GetMapping("/diagnosis/zones/{zoneId}/latest")
     public ResponseEntity<SoilHealthResource> getLatestDiagnosisForZone(@PathVariable Long zoneId) {
+        if (!ownershipService.isZoneOwnerOrAdmin(zoneId)) return ResponseEntity.status(403).build();
         var diagnosis = diagnosisQueryService.findLatestByZoneId(zoneId)
                 .orElseThrow(() -> new DiagnosisNotFoundException("No diagnosis found for zone ID: " + zoneId));
         return ResponseEntity.ok(SoilHealthResourceFromEntityAssembler.toResourceFromEntity(diagnosis));

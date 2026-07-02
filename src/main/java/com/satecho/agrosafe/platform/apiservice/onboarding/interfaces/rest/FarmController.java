@@ -65,12 +65,16 @@ public class FarmController {
     @GetMapping("/{farmId}")
     public ResponseEntity<FarmResource> getFarmById(@PathVariable Long farmId) {
         var farm = farmQueryService.findById(farmId);
-        return farm.map(f -> ResponseEntity.ok(FarmResourceFromEntityAssembler.toResourceFromEntity(f)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        if (farm.isEmpty()) return ResponseEntity.notFound().build();
+        if (!isOwnerOrAdmin(farm.get().getUserId())) return ResponseEntity.status(403).build();
+        return ResponseEntity.ok(FarmResourceFromEntityAssembler.toResourceFromEntity(farm.get()));
     }
 
     @PutMapping("/{farmId}")
     public ResponseEntity<?> updateFarm(@PathVariable Long farmId, @RequestBody UpdateFarmResource resource) {
+        var farm = farmQueryService.findById(farmId);
+        if (farm.isEmpty()) return ResponseEntity.notFound().build();
+        if (!isOwnerOrAdmin(farm.get().getUserId())) return ResponseEntity.status(403).build();
         var command = UpdateFarmCommandFromResourceAssembler.toCommandFromResource(resource);
         var result = farmCommandService.updateFarm(farmId, command);
         return ResponseEntityAssembler.toResponseEntityFromResult(
@@ -79,6 +83,9 @@ public class FarmController {
 
     @DeleteMapping("/{farmId}")
     public ResponseEntity<?> deleteFarm(@PathVariable Long farmId) {
+        var farm = farmQueryService.findById(farmId);
+        if (farm.isEmpty()) return ResponseEntity.notFound().build();
+        if (!isOwnerOrAdmin(farm.get().getUserId())) return ResponseEntity.status(403).build();
         var result = farmCommandService.deleteFarm(farmId);
         if (result.isFailure()) {
             return ResponseEntityAssembler.toResponseEntityFromResult(
@@ -89,6 +96,9 @@ public class FarmController {
 
     @PostMapping("/{farmId}/zones")
     public ResponseEntity<?> createZone(@PathVariable Long farmId, @RequestBody CreateZoneResource resource) {
+        var farm = farmQueryService.findById(farmId);
+        if (farm.isEmpty()) return ResponseEntity.notFound().build();
+        if (!isOwnerOrAdmin(farm.get().getUserId())) return ResponseEntity.status(403).build();
         var command = CreateZoneCommandFromResourceAssembler.toCommandFromResource(resource, farmId);
         var result = zoneCommandService.createZone(command);
         return ResponseEntityAssembler.toResponseEntityFromResult(
@@ -97,8 +107,21 @@ public class FarmController {
 
     @GetMapping("/{farmId}/zones")
     public ResponseEntity<List<ZoneResource>> getZonesByFarm(@PathVariable Long farmId) {
+        var farm = farmQueryService.findById(farmId);
+        if (farm.isEmpty()) return ResponseEntity.notFound().build();
+        if (!isOwnerOrAdmin(farm.get().getUserId())) return ResponseEntity.status(403).build();
         var zones = zoneQueryService.findAllByFarmId(farmId);
         var resources = zones.stream().map(ZoneResourceFromEntityAssembler::toResourceFromEntity).toList();
         return ResponseEntity.ok(resources);
+    }
+
+    /**
+     * Ownership check: the caller must own the farm, or hold ROLE_ADMIN.
+     * Agronomist-client access (viewing an assigned farmer's farm) will extend
+     * this once the agronomist bounded context ships (Fase 2).
+     */
+    private boolean isOwnerOrAdmin(Long farmOwnerUserId) {
+        if (SecurityContextUtil.isAdmin()) return true;
+        return farmOwnerUserId.equals(SecurityContextUtil.getCurrentUserId());
     }
 }

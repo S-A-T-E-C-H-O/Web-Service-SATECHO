@@ -10,6 +10,7 @@ import com.satecho.agrosafe.platform.apiservice.onboarding.interfaces.rest.resou
 import com.satecho.agrosafe.platform.apiservice.onboarding.interfaces.rest.resources.ZoneResource;
 import com.satecho.agrosafe.platform.apiservice.onboarding.interfaces.rest.transform.UpdateZoneThresholdCommandFromResourceAssembler;
 import com.satecho.agrosafe.platform.apiservice.onboarding.interfaces.rest.transform.ZoneResourceFromEntityAssembler;
+import com.satecho.agrosafe.platform.apiservice.shared.infrastructure.security.ResourceOwnershipService;
 import com.satecho.agrosafe.platform.apiservice.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
@@ -25,14 +26,18 @@ public class ZoneController {
 
     private final ZoneCommandService zoneCommandService;
     private final ZoneQueryService zoneQueryService;
+    private final ResourceOwnershipService ownershipService;
 
-    public ZoneController(ZoneCommandService zoneCommandService, ZoneQueryService zoneQueryService) {
+    public ZoneController(ZoneCommandService zoneCommandService, ZoneQueryService zoneQueryService,
+                           ResourceOwnershipService ownershipService) {
         this.zoneCommandService = zoneCommandService;
         this.zoneQueryService = zoneQueryService;
+        this.ownershipService = ownershipService;
     }
 
     @GetMapping("/{zoneId}")
     public ResponseEntity<ZoneResource> getZoneById(@PathVariable Long zoneId) {
+        if (!ownershipService.isZoneOwnerOrAdmin(zoneId)) return ResponseEntity.status(403).build();
         var zone = zoneQueryService.findById(zoneId)
                 .orElseThrow(() -> new ZoneNotFoundException(zoneId));
         return ResponseEntity.ok(ZoneResourceFromEntityAssembler.toResourceFromEntity(zone));
@@ -40,6 +45,7 @@ public class ZoneController {
 
     @PatchMapping("/{zoneId}")
     public ResponseEntity<?> updateZone(@PathVariable Long zoneId, @RequestBody UpdateZoneResource resource) {
+        if (!ownershipService.isZoneOwnerOrAdmin(zoneId)) return ResponseEntity.status(403).build();
         var result = zoneCommandService.updateZone(zoneId, resource.name(), resource.areaHectares());
         return ResponseEntityAssembler.toResponseEntityFromResult(
                 result, ZoneResourceFromEntityAssembler::toResourceFromEntity, ResponseEntity.ok().build().getStatusCode());
@@ -47,6 +53,7 @@ public class ZoneController {
 
     @PatchMapping("/{zoneId}/thresholds")
     public ResponseEntity<?> updateThresholds(@PathVariable Long zoneId, @RequestBody UpdateZoneThresholdResource resource) {
+        if (!ownershipService.isZoneOwnerOrAdmin(zoneId)) return ResponseEntity.status(403).build();
         var command = UpdateZoneThresholdCommandFromResourceAssembler.toCommandFromResource(resource, zoneId);
         var result = zoneCommandService.updateThresholds(command);
         return ResponseEntityAssembler.toResponseEntityFromResult(
@@ -55,6 +62,7 @@ public class ZoneController {
 
     @PostMapping("/{zoneId}/devices")
     public ResponseEntity<?> linkDevice(@PathVariable Long zoneId, @RequestBody LinkDeviceResource resource) {
+        if (!ownershipService.isZoneOwnerOrAdmin(zoneId)) return ResponseEntity.status(403).build();
         var command = new LinkDeviceToZoneCommand(zoneId, resource.deviceId());
         var result = zoneCommandService.linkDevice(command);
         return ResponseEntityAssembler.toResponseEntityFromResult(

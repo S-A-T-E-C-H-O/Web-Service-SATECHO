@@ -9,6 +9,7 @@ import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.valueobj
 import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.valueobjects.ActuatorType;
 import com.satecho.agrosafe.platform.apiservice.irrigation.interfaces.rest.resources.ActuatorCommandResource;
 import com.satecho.agrosafe.platform.apiservice.irrigation.interfaces.rest.resources.ActuatorLogResource;
+import com.satecho.agrosafe.platform.apiservice.shared.infrastructure.security.ResourceOwnershipService;
 import com.satecho.agrosafe.platform.apiservice.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
@@ -27,12 +28,17 @@ public class ActuatorController {
 
     private final ActuatorCommandService actuatorCommandService;
     private final ActuatorQueryService actuatorQueryService;
+    private final ResourceOwnershipService ownershipService;
 
-    public ActuatorController(ActuatorCommandService actuatorCommandService, ActuatorQueryService actuatorQueryService) {
+    public ActuatorController(ActuatorCommandService actuatorCommandService, ActuatorQueryService actuatorQueryService,
+                               ResourceOwnershipService ownershipService) {
         this.actuatorCommandService = actuatorCommandService;
         this.actuatorQueryService = actuatorQueryService;
+        this.ownershipService = ownershipService;
     }
 
+    // Called by the Edge service to log an actuator action it already executed
+    // on behalf of the device — no farmer ownership check applies here.
     @PostMapping("/command")
     public ResponseEntity<?> logCommand(@PathVariable Long deviceId, @RequestBody ActuatorCommandResource resource) {
         var command = new LogActuatorCommand(deviceId, resource.zoneId(),
@@ -49,6 +55,7 @@ public class ActuatorController {
             @RequestParam(required = false) Instant fromDate,
             @RequestParam(required = false) Instant toDate,
             @RequestParam(required = false, defaultValue = "20") Integer limit) {
+        if (!ownershipService.isDeviceOwnerOrAdmin(deviceId)) return ResponseEntity.status(403).build();
         var query = new GetActuatorLogsByDeviceQuery(deviceId, fromDate, toDate, limit);
         var logs = actuatorQueryService.handle(query);
         var resources = logs.stream()

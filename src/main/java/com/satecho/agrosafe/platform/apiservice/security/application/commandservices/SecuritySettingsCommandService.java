@@ -7,4 +7,5 @@ import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result
 
 public interface SecuritySettingsCommandService {
     Result<SecuritySettings, ApplicationError> updateSettings(UpdateSecuritySettingsCommand command);
+    Result<SecuritySettings, ApplicationError> setZoneDetectionEnabled(Long farmId, Long zoneId, boolean enabled);
 }
