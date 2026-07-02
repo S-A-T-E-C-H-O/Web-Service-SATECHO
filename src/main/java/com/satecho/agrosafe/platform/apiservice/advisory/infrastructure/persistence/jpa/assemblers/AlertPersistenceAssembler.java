@@ -1,6 +1,5 @@
 package com.satecho.agrosafe.platform.apiservice.advisory.infrastructure.persistence.jpa.assemblers;
 
-
 import com.satecho.agrosafe.platform.apiservice.advisory.domain.model.aggregates.Alert;
 import com.satecho.agrosafe.platform.apiservice.advisory.infrastructure.persistence.jpa.entities.AlertPersistenceEntity;
 
