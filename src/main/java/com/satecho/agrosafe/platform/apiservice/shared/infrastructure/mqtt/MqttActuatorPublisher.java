@@ -12,12 +12,11 @@ import java.util.Map;
  * Publica comandos de actuador (válvula, bomba) hacia dispositivos vía MQTT.
  *
  * Topic: agrosafe/{farmId}/devices/{deviceId}/actuator/command
- * Payload: {"action":"OPEN","durationMinutes":30}
+ * Payload: {"action":"IRRIGATE_ON","duration_minutes":30} | {"action":"IRRIGATE_OFF"}
  *
  * Valores de action alineados con:
- *   - Back:  ActuatorAction enum  (OPEN / CLOSE / TOGGLE)
- *   - ESP32: handleMQTTCommand()  (OPEN / CLOSE)
- *   - Edge:  mqtt_subscriber.py   (OPEN / CLOSE)
+ *   - ESP32: mqttCommandTask()               (IRRIGATE_ON / IRRIGATE_OFF, OPEN/CLOSE como alias)
+ *   - Edge:  actuator_command_subscriber.py  (pasa el payload sin traducir; buferea si offline)
  */
 @Component
 public class MqttActuatorPublisher {
