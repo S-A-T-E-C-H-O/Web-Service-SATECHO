@@ -8,6 +8,7 @@ import com.satecho.agrosafe.platform.apiservice.iot.domain.model.commands.*;
 import com.satecho.agrosafe.platform.apiservice.iot.domain.model.events.HeartbeatReceivedEvent;
 import com.satecho.agrosafe.platform.apiservice.iot.domain.repositories.DeviceRepository;
 import com.satecho.agrosafe.platform.apiservice.iot.interfaces.rest.resources.RegisterDeviceResource;
+import com.satecho.agrosafe.platform.apiservice.billing.application.queryservices.PlanLimitsService;
 import com.satecho.agrosafe.platform.apiservice.shared.application.result.ApplicationError;
 import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result;
 import org.springframework.stereotype.Service;
@@ -21,15 +22,20 @@ import java.util.List;
 public class DeviceCommandServiceImpl implements DeviceCommandService {
 
     private final DeviceRepository deviceRepository;
+    private final PlanLimitsService planLimitsService;
 
-    public DeviceCommandServiceImpl(DeviceRepository deviceRepository) {
+    public DeviceCommandServiceImpl(DeviceRepository deviceRepository, PlanLimitsService planLimitsService) {
         this.deviceRepository = deviceRepository;
+        this.planLimitsService = planLimitsService;
     }
 
     @Override
     public Result<Device, ApplicationError> handle(RegisterDeviceCommand command) {
         if (deviceRepository.existsBySerialNumber(command.serialNumber())) {
             return Result.failure(ApplicationError.conflict("Device", "Duplicate serial number: " + command.serialNumber()));
+        }
+        if (!planLimitsService.canRegisterDevice(command.userId())) {
+            return Result.failure(ApplicationError.forbidden("Device", "Farmer's plan device limit has been reached"));
         }
         var device = new Device(command.userId(), command.serialNumber(), command.type());
         return Result.success(deviceRepository.save(device));
@@ -81,7 +87,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
     }
 
     @Override
-    public Result<BatchRegisterResult, ApplicationError> handleBatchRegister(Long userId, List<RegisterDeviceResource> resources) {
+    public Result<BatchRegisterResult, ApplicationError> handleBatchRegister(List<RegisterDeviceResource> resources) {
         List<BatchRegisterResult.Entry> entries = new ArrayList<>();
         int succeeded = 0, failed = 0;
         for (var resource : resources) {
@@ -89,8 +95,11 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
                 if (deviceRepository.existsBySerialNumber(resource.serialNumber())) {
                     entries.add(new BatchRegisterResult.Entry(resource.serialNumber(), "FAILED", null, "Duplicate serial number"));
                     failed++;
+                } else if (!planLimitsService.canRegisterDevice(resource.farmerId())) {
+                    entries.add(new BatchRegisterResult.Entry(resource.serialNumber(), "FAILED", null, "Farmer's plan device limit has been reached"));
+                    failed++;
                 } else {
-                    var device = new Device(userId, resource.serialNumber(), resource.type());
+                    var device = new Device(resource.farmerId(), resource.serialNumber(), resource.type());
                     var saved = deviceRepository.save(device);
                     entries.add(new BatchRegisterResult.Entry(resource.serialNumber(), "SUCCESS", saved.getId(), null));
                     succeeded++;

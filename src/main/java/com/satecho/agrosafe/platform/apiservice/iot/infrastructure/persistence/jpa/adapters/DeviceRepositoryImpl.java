@@ -26,6 +26,11 @@ public class DeviceRepositoryImpl implements DeviceRepository {
     }
 
     @Override
+    public List<Device> findAll() {
+        return persistenceRepository.findAll().stream().map(DevicePersistenceAssembler::toDomainFromPersistence).toList();
+    }
+
+    @Override
     public List<Device> findByUserId(Long userId) {
         return persistenceRepository.findByUserId(userId).stream().map(DevicePersistenceAssembler::toDomainFromPersistence).toList();
     }

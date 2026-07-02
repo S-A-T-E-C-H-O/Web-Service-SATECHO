@@ -42,4 +42,9 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
     public Optional<Device> handle(GetDeviceBySerialNumberQuery query) {
         return deviceRepository.findBySerialNumber(query.serialNumber());
     }
+
+    @Override
+    public List<Device> findAll() {
+        return deviceRepository.findAll();
+    }
 }

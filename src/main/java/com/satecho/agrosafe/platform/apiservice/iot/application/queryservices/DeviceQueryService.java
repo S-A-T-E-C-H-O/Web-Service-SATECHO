@@ -12,4 +12,5 @@ public interface DeviceQueryService {
     Optional<Device> handle(GetDeviceByIdQuery query);
     List<Device> handle(GetAllDevicesByUserIdQuery query);
     Optional<Device> handle(GetDeviceBySerialNumberQuery query);
+    List<Device> findAll();
 }

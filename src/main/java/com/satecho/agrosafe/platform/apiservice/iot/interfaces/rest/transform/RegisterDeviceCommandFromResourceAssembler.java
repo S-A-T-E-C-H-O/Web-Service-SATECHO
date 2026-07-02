@@ -5,7 +5,7 @@ import com.satecho.agrosafe.platform.apiservice.iot.interfaces.rest.resources.Re
 
 public class RegisterDeviceCommandFromResourceAssembler {
     private RegisterDeviceCommandFromResourceAssembler() {}
-    public static RegisterDeviceCommand toCommand(RegisterDeviceResource resource, Long userId) {
-        return new RegisterDeviceCommand(resource.serialNumber(), resource.type(), userId);
+    public static RegisterDeviceCommand toCommand(RegisterDeviceResource resource) {
+        return new RegisterDeviceCommand(resource.serialNumber(), resource.type(), resource.farmerId());
     }
 }
