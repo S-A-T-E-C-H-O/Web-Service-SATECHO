@@ -24,6 +24,12 @@ public final class UserPersistenceAssembler {
         domain.setVerified(entity.getVerified() != null ? entity.getVerified() : true);
         domain.setVerificationToken(entity.getVerificationToken());
         domain.setCreatedAt(entity.getCreatedAt());
+        domain.setResetToken(entity.getResetToken());
+        domain.setResetTokenExpiresAt(entity.getResetTokenExpiresAt());
+        domain.setRegistrationNumber(entity.getRegistrationNumber());
+        domain.setSpecialty(entity.getSpecialty());
+        domain.setYearsOfExperience(entity.getYearsOfExperience());
+        domain.setBlocked(entity.getBlocked() != null ? entity.getBlocked() : false);
         domain.setRoles(entity.getRoles() == null
                 ? new HashSet<>()
                 : entity.getRoles().stream()
@@ -43,6 +49,12 @@ public final class UserPersistenceAssembler {
         entity.setPassword(user.getPassword());
         entity.setVerified(user.getVerified() != null ? user.getVerified() : true);
         entity.setVerificationToken(user.getVerificationToken());
+        entity.setResetToken(user.getResetToken());
+        entity.setResetTokenExpiresAt(user.getResetTokenExpiresAt());
+        entity.setRegistrationNumber(user.getRegistrationNumber());
+        entity.setSpecialty(user.getSpecialty());
+        entity.setYearsOfExperience(user.getYearsOfExperience());
+        entity.setBlocked(user.getBlocked() != null ? user.getBlocked() : false);
         entity.setRoles(user.getRoles() == null
                 ? new HashSet<>()
                 : user.getRoles().stream()

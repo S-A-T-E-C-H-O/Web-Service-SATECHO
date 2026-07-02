@@ -13,6 +13,10 @@ public record SignUpResource(
         @NotBlank @Size(max = 100) String fullName,
         @NotBlank @Email @Size(max = 50) String email,
         @NotBlank @Size(min = 8, max = 120) String password,
-        List<String> roles
+        List<String> roles,
+        // Required only when roles includes ROLE_AGRONOMIST (EP-001-US007).
+        String registrationNumber,
+        String specialty,
+        Integer yearsOfExperience
 ) {
 }

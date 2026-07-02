@@ -53,4 +53,14 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<User> findByVerificationToken(String token) {
         return userPersistenceRepository.findByVerificationToken(token).map(UserPersistenceAssembler::toDomainFromPersistence);
     }
+
+    @Override
+    public Optional<User> findByResetToken(String resetToken) {
+        return userPersistenceRepository.findByResetToken(resetToken).map(UserPersistenceAssembler::toDomainFromPersistence);
+    }
+
+    @Override
+    public boolean existsByRegistrationNumber(String registrationNumber) {
+        return userPersistenceRepository.existsByRegistrationNumber(registrationNumber);
+    }
 }

@@ -2,4 +2,6 @@ package com.satecho.agrosafe.platform.apiservice.iam.application.internal.outbou
 
 public interface EmailService {
     void sendVerificationEmail(String to, String fullName, String verificationToken);
+
+    void sendPasswordResetEmail(String to, String fullName, String resetToken);
 }
