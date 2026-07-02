@@ -26,4 +26,8 @@ public class SecuritySettingsPersistenceEntity extends AuditableAbstractPersiste
     private String detectionScheduleEnd;
     @Column(name = "notification_contacts", columnDefinition = "TEXT")
     private String notificationContacts;
+    @ElementCollection
+    @CollectionTable(name = "security_settings_disabled_zones", joinColumns = @JoinColumn(name = "security_settings_id"))
+    @Column(name = "zone_id")
+    private java.util.Set<Long> disabledZoneIds = new java.util.HashSet<>();
 }

@@ -27,4 +27,12 @@ public class SecuritySettingsCommandServiceImpl implements SecuritySettingsComma
                 command.detectionScheduleStart(), command.detectionScheduleEnd(), command.notificationContacts());
         return Result.success(securitySettingsRepository.save(settings));
     }
+
+    @Override
+    public Result<SecuritySettings, ApplicationError> setZoneDetectionEnabled(Long farmId, Long zoneId, boolean enabled) {
+        var settings = securitySettingsRepository.findByFarmId(farmId)
+                .orElseGet(() -> securitySettingsRepository.save(new SecuritySettings(farmId)));
+        settings.setZoneDetectionEnabled(zoneId, enabled);
+        return Result.success(securitySettingsRepository.save(settings));
+    }
 }

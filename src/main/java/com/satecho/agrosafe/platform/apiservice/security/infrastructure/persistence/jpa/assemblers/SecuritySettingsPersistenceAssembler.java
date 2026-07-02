@@ -16,6 +16,7 @@ public final class SecuritySettingsPersistenceAssembler {
         d.setDetectionScheduleStart(e.getDetectionScheduleStart());
         d.setDetectionScheduleEnd(e.getDetectionScheduleEnd());
         d.setNotificationContacts(e.getNotificationContacts());
+        d.setDisabledZoneIds(e.getDisabledZoneIds() != null ? new java.util.HashSet<>(e.getDisabledZoneIds()) : new java.util.HashSet<>());
         return d;
     }
 
@@ -29,6 +30,7 @@ public final class SecuritySettingsPersistenceAssembler {
         e.setDetectionScheduleStart(d.getDetectionScheduleStart());
         e.setDetectionScheduleEnd(d.getDetectionScheduleEnd());
         e.setNotificationContacts(d.getNotificationContacts());
+        e.setDisabledZoneIds(d.getDisabledZoneIds() != null ? new java.util.HashSet<>(d.getDisabledZoneIds()) : new java.util.HashSet<>());
         return e;
     }
 }

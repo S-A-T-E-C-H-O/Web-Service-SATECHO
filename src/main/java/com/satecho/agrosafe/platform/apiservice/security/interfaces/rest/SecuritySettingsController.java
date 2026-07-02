@@ -4,6 +4,7 @@ import com.satecho.agrosafe.platform.apiservice.security.application.commandserv
 import com.satecho.agrosafe.platform.apiservice.security.application.queryservices.SecuritySettingsQueryService;
 import com.satecho.agrosafe.platform.apiservice.security.domain.model.commands.UpdateSecuritySettingsCommand;
 import com.satecho.agrosafe.platform.apiservice.security.domain.model.queries.GetSecuritySettingsByFarmQuery;
+import com.satecho.agrosafe.platform.apiservice.onboarding.application.queryservices.FarmQueryService;
 import com.satecho.agrosafe.platform.apiservice.security.interfaces.rest.resources.*;
 import com.satecho.agrosafe.platform.apiservice.security.interfaces.rest.transform.*;
 import com.satecho.agrosafe.platform.apiservice.shared.infrastructure.security.SecurityContextUtil;
@@ -19,16 +20,19 @@ public class SecuritySettingsController {
 
     private final SecuritySettingsCommandService securitySettingsCommandService;
     private final SecuritySettingsQueryService securitySettingsQueryService;
+    private final FarmQueryService farmQueryService;
 
     public SecuritySettingsController(SecuritySettingsCommandService securitySettingsCommandService,
-                                      SecuritySettingsQueryService securitySettingsQueryService) {
+                                      SecuritySettingsQueryService securitySettingsQueryService,
+                                      FarmQueryService farmQueryService) {
         this.securitySettingsCommandService = securitySettingsCommandService;
         this.securitySettingsQueryService = securitySettingsQueryService;
+        this.farmQueryService = farmQueryService;
     }
 
     @GetMapping("/farms/{farmId}/security/settings")
     public ResponseEntity<SecuritySettingsResource> getSettings(@PathVariable Long farmId) {
-        SecurityContextUtil.getCurrentUserId();
+        if (!isOwnerOrAdmin(farmId)) return ResponseEntity.status(403).build();
         var settings = securitySettingsQueryService.handle(new GetSecuritySettingsByFarmQuery(farmId))
                 .orElseGet(() -> {
                     var defaults = new com.satecho.agrosafe.platform.apiservice.security.domain.model.aggregates.SecuritySettings(farmId);
@@ -42,10 +46,27 @@ public class SecuritySettingsController {
 
     @PutMapping("/farms/{farmId}/security/settings")
     public ResponseEntity<?> updateSettings(@PathVariable Long farmId, @RequestBody UpdateSecuritySettingsResource resource) {
-        SecurityContextUtil.getCurrentUserId();
+        if (!isOwnerOrAdmin(farmId)) return ResponseEntity.status(403).build();
         var command = UpdateSecuritySettingsCommandFromResourceAssembler.toCommand(farmId, resource);
         var result = securitySettingsCommandService.updateSettings(command);
         if (result.isSuccess()) return ResponseEntity.ok(SecuritySettingsResourceFromEntityAssembler.toResource(result.toOptional().orElseThrow()));
         return ResponseEntity.badRequest().build();
+    }
+
+    /** EP-013: silence or re-enable perimeter detection for one specific parcel of the farm. */
+    @PutMapping("/farms/{farmId}/security/settings/zones/{zoneId}")
+    public ResponseEntity<?> setZoneDetectionEnabled(@PathVariable Long farmId, @PathVariable Long zoneId,
+                                                       @RequestBody ZoneDetectionToggleResource resource) {
+        if (!isOwnerOrAdmin(farmId)) return ResponseEntity.status(403).build();
+        var result = securitySettingsCommandService.setZoneDetectionEnabled(farmId, zoneId, resource.enabled());
+        if (result.isSuccess()) return ResponseEntity.ok(SecuritySettingsResourceFromEntityAssembler.toResource(result.toOptional().orElseThrow()));
+        return ResponseEntity.badRequest().build();
+    }
+
+    private boolean isOwnerOrAdmin(Long farmId) {
+        if (SecurityContextUtil.isAdmin()) return true;
+        return farmQueryService.findById(farmId)
+                .map(farm -> farm.getUserId().equals(SecurityContextUtil.getCurrentUserId()))
+                .orElse(false);
     }
 }

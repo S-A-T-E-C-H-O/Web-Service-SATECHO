@@ -25,6 +25,11 @@ public class ZoneQueryServiceImpl implements ZoneQueryService {
     }
 
     @Override
+    public Optional<IrrigationZone> findByDeviceId(Long deviceId) {
+        return zoneRepository.findByDeviceId(deviceId);
+    }
+
+    @Override
     public List<IrrigationZone> findAllByFarmId(Long farmId) {
         return zoneRepository.findAllByFarmId(farmId);
     }
