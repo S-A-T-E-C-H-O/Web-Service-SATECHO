@@ -16,8 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import static com.satecho.agrosafe.platform.apiservice.advisory.domain.model.valueobjects.AlertType.*;
-
 /**
  * Bridges domain events raised in {@code advisory} (soil alerts) and {@code security} (PIR intrusion
  * detection) into push notifications, resolving the recipient farmer's userId and FCM tokens.
@@ -33,8 +31,8 @@ public class AlertNotificationEventHandler {
     private final NotificationCommandService notificationCommandService;
 
     public AlertNotificationEventHandler(FarmRepository farmRepository, ZoneRepository zoneRepository,
-                                         DeviceTokenRepository deviceTokenRepository,
-                                         NotificationCommandService notificationCommandService) {
+                                          DeviceTokenRepository deviceTokenRepository,
+                                          NotificationCommandService notificationCommandService) {
         this.farmRepository = farmRepository;
         this.zoneRepository = zoneRepository;
         this.deviceTokenRepository = deviceTokenRepository;
@@ -88,7 +86,7 @@ public class AlertNotificationEventHandler {
     }
 
     private void dispatchPushToAllDevices(Long userId, NotificationType type, String title, String body,
-                                          Long relatedEntityId, String relatedEntityType) {
+                                           Long relatedEntityId, String relatedEntityType) {
         var tokens = deviceTokenRepository.findByUserId(userId);
         if (tokens.isEmpty()) {
             log.info("No FCM tokens registered for userId={}, skipping push (type={})", userId, type);
