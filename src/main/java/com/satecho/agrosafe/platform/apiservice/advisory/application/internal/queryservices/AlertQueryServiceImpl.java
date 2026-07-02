@@ -4,7 +4,6 @@ import com.satecho.agrosafe.platform.apiservice.advisory.application.queryservic
 import com.satecho.agrosafe.platform.apiservice.advisory.domain.model.aggregates.Alert;
 import com.satecho.agrosafe.platform.apiservice.advisory.domain.model.valueobjects.AlertStatus;
 import com.satecho.agrosafe.platform.apiservice.advisory.domain.repositories.AlertRepository;
-
 import org.springframework.stereotype.Service;
 
 import java.util.List;
