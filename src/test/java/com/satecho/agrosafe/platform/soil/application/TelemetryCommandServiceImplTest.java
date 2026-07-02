@@ -6,6 +6,8 @@ import com.satecho.agrosafe.platform.apiservice.soil.domain.model.commands.Batch
 import com.satecho.agrosafe.platform.apiservice.soil.domain.model.commands.IngestTelemetryCommand;
 import com.satecho.agrosafe.platform.apiservice.soil.domain.model.valueobjects.MetricType;
 import com.satecho.agrosafe.platform.apiservice.soil.domain.repositories.SensorReadingRepository;
+import com.satecho.agrosafe.platform.apiservice.onboarding.application.queryservices.FarmQueryService;
+import com.satecho.agrosafe.platform.apiservice.onboarding.application.queryservices.ZoneQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +31,8 @@ class TelemetryCommandServiceImplTest {
 
     @Mock SensorReadingRepository sensorReadingRepository;
     @Mock ApplicationEventPublisher eventPublisher;
+    @Mock ZoneQueryService zoneQueryService;
+    @Mock FarmQueryService farmQueryService;
     @InjectMocks TelemetryCommandServiceImpl service;
 
     private SensorReading savedReading(Long deviceId, Long zoneId, MetricType type, double value) {
@@ -146,5 +150,47 @@ class TelemetryCommandServiceImplTest {
         var result = service.batchIngest(batch);
 
         assertThat(result.isFailure()).isTrue();
+    }
+
+    // ── deactivated farm rejects telemetry (EP-011-US002) ────────────────────
+
+    @Test
+    @DisplayName("ingestTelemetry: deactivated farm rejects the reading")
+    void ingestTelemetry_deactivatedFarm_returnsFailure() {
+        var zone = new com.satecho.agrosafe.platform.apiservice.onboarding.domain.model.aggregates.IrrigationZone();
+        zone.setId(1L);
+        zone.setFarmId(10L);
+        var farm = new com.satecho.agrosafe.platform.apiservice.onboarding.domain.model.aggregates.Farm();
+        farm.setId(10L);
+        farm.deactivate();
+
+        when(zoneQueryService.findById(1L)).thenReturn(java.util.Optional.of(zone));
+        when(farmQueryService.findById(10L)).thenReturn(java.util.Optional.of(farm));
+
+        var command = new IngestTelemetryCommand(1L, 1L, MetricType.SOIL_MOISTURE, 40.0, Instant.now());
+        var result = service.ingestTelemetry(command);
+
+        assertThat(result.isFailure()).isTrue();
+        verifyNoInteractions(sensorReadingRepository);
+    }
+
+    @Test
+    @DisplayName("ingestTelemetry: active farm accepts the reading")
+    void ingestTelemetry_activeFarm_returnsSuccess() {
+        var zone = new com.satecho.agrosafe.platform.apiservice.onboarding.domain.model.aggregates.IrrigationZone();
+        zone.setId(1L);
+        zone.setFarmId(10L);
+        var farm = new com.satecho.agrosafe.platform.apiservice.onboarding.domain.model.aggregates.Farm();
+        farm.setId(10L);
+
+        when(zoneQueryService.findById(1L)).thenReturn(java.util.Optional.of(zone));
+        when(farmQueryService.findById(10L)).thenReturn(java.util.Optional.of(farm));
+        when(sensorReadingRepository.save(any(SensorReading.class)))
+                .thenAnswer(inv -> { SensorReading r = inv.getArgument(0); r.setId(1L); return r; });
+
+        var command = new IngestTelemetryCommand(1L, 1L, MetricType.SOIL_MOISTURE, 40.0, Instant.now());
+        var result = service.ingestTelemetry(command);
+
+        assertThat(result.isSuccess()).isTrue();
     }
 }
