@@ -6,4 +6,4 @@ import com.satecho.agrosafe.platform.apiservice.advisory.domain.model.valueobjec
 import java.time.Instant;
 
 public record AlertCreatedEvent(Long alertId, Long zoneId, Long deviceId, Long farmId, AlertType alertType,
-                                AlertSeverity severity, Double value, Instant createdAt) {}
+                                 AlertSeverity severity, Double value, Instant createdAt) {}

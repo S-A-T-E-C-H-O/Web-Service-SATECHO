@@ -17,6 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+/**
+ * Consumes {@link TelemetryReceivedEvent}, which is published for every soil reading
+ * (not just breaches), so hysteresis can be evaluated: an active alert auto-resolves
+ * the moment a later reading falls back within the zone's configured thresholds.
+ */
 @Service
 public class AlertCommandServiceImpl implements AlertCommandService {
 
@@ -27,7 +32,7 @@ public class AlertCommandServiceImpl implements AlertCommandService {
     private final ApplicationEventPublisher eventPublisher;
 
     public AlertCommandServiceImpl(AlertRepository alertRepository, ZoneRepository zoneRepository,
-                                   ApplicationEventPublisher eventPublisher) {
+                                    ApplicationEventPublisher eventPublisher) {
         this.alertRepository = alertRepository;
         this.zoneRepository = zoneRepository;
         this.eventPublisher = eventPublisher;
@@ -50,7 +55,7 @@ public class AlertCommandServiceImpl implements AlertCommandService {
             var alert = new Alert(event.zoneId(), event.deviceId(), zone.getFarmId(), alertType,
                     AlertSeverity.CRITICAL, event.value(), breachedThreshold);
             var saved = alertRepository.save(alert);
-            log.info("Alert created: type={} zoneId={} value={} threshold={}", alertType.name(), event.zoneId().toString(), event.value(), breachedThreshold);
+            log.info("Alert created: type={} zoneId={} value={} threshold={}", alertType, event.zoneId(), event.value(), breachedThreshold);
             eventPublisher.publishEvent(new AlertCreatedEvent(saved.getId(), saved.getZoneId(), saved.getDeviceId(),
                     saved.getFarmId(), saved.getAlertType(), saved.getSeverity(), saved.getValue(), saved.getCreatedAt()));
         } else {
