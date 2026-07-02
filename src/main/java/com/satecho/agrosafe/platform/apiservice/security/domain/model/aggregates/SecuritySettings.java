@@ -5,6 +5,9 @@ import com.satecho.agrosafe.platform.apiservice.shared.domain.model.aggregates.A
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 public class SecuritySettings extends AuditableAbstractAggregateRoot<SecuritySettings> {
     @Setter private Long id;
@@ -14,8 +17,11 @@ public class SecuritySettings extends AuditableAbstractAggregateRoot<SecuritySet
     @Setter private String detectionScheduleStart;
     @Setter private String detectionScheduleEnd;
     @Setter private String notificationContacts;
+    @Setter private Set<Long> disabledZoneIds;
 
-    public SecuritySettings() {}
+    public SecuritySettings() {
+        this.disabledZoneIds = new HashSet<>();
+    }
 
     public SecuritySettings(Long farmId) {
         if (farmId == null) throw new IllegalArgumentException("farmId cannot be null");
@@ -25,6 +31,7 @@ public class SecuritySettings extends AuditableAbstractAggregateRoot<SecuritySet
         this.detectionScheduleStart = "00:00";
         this.detectionScheduleEnd = "23:59";
         this.notificationContacts = "[]";
+        this.disabledZoneIds = new HashSet<>();
     }
 
     public void update(Integer motionSensitivity, AlertMode alertMode,
@@ -37,5 +44,16 @@ public class SecuritySettings extends AuditableAbstractAggregateRoot<SecuritySet
         if (detectionScheduleStart != null) this.detectionScheduleStart = detectionScheduleStart;
         if (detectionScheduleEnd != null) this.detectionScheduleEnd = detectionScheduleEnd;
         if (notificationContacts != null) this.notificationContacts = notificationContacts;
+    }
+
+    /** EP-013: a farmer can silence perimeter detection for a specific parcel without disabling the whole farm. */
+    public void setZoneDetectionEnabled(Long zoneId, boolean enabled) {
+        if (disabledZoneIds == null) disabledZoneIds = new HashSet<>();
+        if (enabled) disabledZoneIds.remove(zoneId);
+        else disabledZoneIds.add(zoneId);
+    }
+
+    public boolean isZoneDetectionEnabled(Long zoneId) {
+        return disabledZoneIds == null || zoneId == null || !disabledZoneIds.contains(zoneId);
     }
 }

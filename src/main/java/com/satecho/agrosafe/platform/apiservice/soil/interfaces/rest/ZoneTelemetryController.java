@@ -4,6 +4,7 @@ import com.satecho.agrosafe.platform.apiservice.soil.application.queryservices.T
 import com.satecho.agrosafe.platform.apiservice.soil.domain.model.queries.GetLatestReadingsByZoneQuery;
 import com.satecho.agrosafe.platform.apiservice.soil.interfaces.rest.resources.SensorReadingResource;
 import com.satecho.agrosafe.platform.apiservice.soil.interfaces.rest.transform.SensorReadingResourceFromEntityAssembler;
+import com.satecho.agrosafe.platform.apiservice.shared.infrastructure.security.ResourceOwnershipService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +20,18 @@ import java.util.List;
 public class ZoneTelemetryController {
 
     private final TelemetryQueryService telemetryQueryService;
+    private final ResourceOwnershipService ownershipService;
 
-    public ZoneTelemetryController(TelemetryQueryService telemetryQueryService) {
+    public ZoneTelemetryController(TelemetryQueryService telemetryQueryService, ResourceOwnershipService ownershipService) {
         this.telemetryQueryService = telemetryQueryService;
+        this.ownershipService = ownershipService;
     }
 
     @GetMapping("/latest")
     public ResponseEntity<List<SensorReadingResource>> getLatest(
             @PathVariable Long zoneId,
             @RequestParam(required = false) String metricType) {
+        if (!ownershipService.isZoneOwnerOrAdmin(zoneId)) return ResponseEntity.status(403).build();
         var readings = telemetryQueryService.getLatestReadingsByZone(new GetLatestReadingsByZoneQuery(zoneId));
         var result = readings.stream()
                 .filter(r -> metricType == null || (r.getMetricType() != null &&

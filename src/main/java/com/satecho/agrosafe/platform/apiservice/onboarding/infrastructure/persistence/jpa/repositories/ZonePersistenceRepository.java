@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ZonePersistenceRepository extends JpaRepository<IrrigationZonePersistenceEntity, Long> {
     List<IrrigationZonePersistenceEntity> findAllByFarmId(Long farmId);
+    java.util.Optional<IrrigationZonePersistenceEntity> findByDeviceId(Long deviceId);
 }

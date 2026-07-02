@@ -10,4 +10,6 @@ public interface FarmCommandService {
     Result<Farm, ApplicationError> createFarm(CreateFarmCommand command);
     Result<Farm, ApplicationError> updateFarm(Long farmId, UpdateFarmCommand command);
     Result<Void, ApplicationError> deleteFarm(Long farmId);
+    Result<Farm, ApplicationError> deactivateFarm(Long farmId);
+    Result<Farm, ApplicationError> reactivateFarm(Long farmId);
 }

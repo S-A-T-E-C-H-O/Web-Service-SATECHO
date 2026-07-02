@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface ZoneRepository {
     Optional<IrrigationZone> findById(Long id);
+    Optional<IrrigationZone> findByDeviceId(Long deviceId);
     List<IrrigationZone> findAllByFarmId(Long farmId);
     IrrigationZone save(IrrigationZone zone);
 }

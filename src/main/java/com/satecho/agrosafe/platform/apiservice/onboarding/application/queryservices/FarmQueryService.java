@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface FarmQueryService {
     Optional<Farm> findById(Long farmId);
     List<Farm> findAllByUserId(Long userId);
+    List<Farm> findAll();
 }

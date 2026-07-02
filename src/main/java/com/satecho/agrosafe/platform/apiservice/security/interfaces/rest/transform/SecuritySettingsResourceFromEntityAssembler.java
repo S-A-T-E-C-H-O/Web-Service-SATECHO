@@ -9,6 +9,7 @@ public class SecuritySettingsResourceFromEntityAssembler {
         if (e == null) return null;
         return new SecuritySettingsResource(e.getId(), e.getFarmId(), e.getMotionSensitivity(),
                 e.getAlertMode() != null ? e.getAlertMode().name() : null,
-                e.getDetectionScheduleStart(), e.getDetectionScheduleEnd(), e.getNotificationContacts());
+                e.getDetectionScheduleStart(), e.getDetectionScheduleEnd(), e.getNotificationContacts(),
+                e.getDisabledZoneIds());
     }
 }

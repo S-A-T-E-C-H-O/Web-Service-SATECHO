@@ -24,6 +24,11 @@ public class ZoneRepositoryImpl implements ZoneRepository {
     }
 
     @Override
+    public Optional<IrrigationZone> findByDeviceId(Long deviceId) {
+        return zonePersistenceRepository.findByDeviceId(deviceId).map(ZonePersistenceAssembler::toDomainFromPersistence);
+    }
+
+    @Override
     public List<IrrigationZone> findAllByFarmId(Long farmId) {
         return zonePersistenceRepository.findAllByFarmId(farmId).stream()
                 .map(ZonePersistenceAssembler::toDomainFromPersistence)

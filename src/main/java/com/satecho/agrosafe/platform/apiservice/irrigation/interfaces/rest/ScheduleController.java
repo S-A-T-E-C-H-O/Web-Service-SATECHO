@@ -12,6 +12,7 @@ import com.satecho.agrosafe.platform.apiservice.irrigation.interfaces.rest.resou
 import com.satecho.agrosafe.platform.apiservice.irrigation.interfaces.rest.resources.IrrigationScheduleResource;
 import com.satecho.agrosafe.platform.apiservice.irrigation.interfaces.rest.resources.UpdateScheduleResource;
 import com.satecho.agrosafe.platform.apiservice.irrigation.interfaces.rest.transform.IrrigationScheduleResourceFromEntityAssembler;
+import com.satecho.agrosafe.platform.apiservice.shared.infrastructure.security.ResourceOwnershipService;
 import com.satecho.agrosafe.platform.apiservice.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
@@ -29,14 +30,18 @@ public class ScheduleController {
 
     private final ScheduleCommandService scheduleCommandService;
     private final ScheduleQueryService scheduleQueryService;
+    private final ResourceOwnershipService ownershipService;
 
-    public ScheduleController(ScheduleCommandService scheduleCommandService, ScheduleQueryService scheduleQueryService) {
+    public ScheduleController(ScheduleCommandService scheduleCommandService, ScheduleQueryService scheduleQueryService,
+                               ResourceOwnershipService ownershipService) {
         this.scheduleCommandService = scheduleCommandService;
         this.scheduleQueryService = scheduleQueryService;
+        this.ownershipService = ownershipService;
     }
 
     @PostMapping
     public ResponseEntity<?> createSchedule(@PathVariable Long zoneId, @RequestBody CreateScheduleResource resource) {
+        if (!ownershipService.isZoneOwnerOrAdmin(zoneId)) return ResponseEntity.status(403).build();
         var command = new CreateScheduleCommand(zoneId, resource.deviceId(), resource.startAt(),
                 resource.durationMinutes(), RecurrencePattern.valueOf(resource.recurrence()),
                 resource.cronExpression(), resource.enabled());
@@ -47,6 +52,7 @@ public class ScheduleController {
 
     @GetMapping
     public ResponseEntity<List<IrrigationScheduleResource>> listSchedules(@PathVariable Long zoneId) {
+        if (!ownershipService.isZoneOwnerOrAdmin(zoneId)) return ResponseEntity.status(403).build();
         var query = new GetSchedulesByZoneQuery(zoneId);
         var schedules = scheduleQueryService.handle(query);
         var resources = schedules.stream()
@@ -58,6 +64,7 @@ public class ScheduleController {
     @PutMapping("/{scheduleId}")
     public ResponseEntity<?> updateSchedule(@PathVariable Long zoneId, @PathVariable Long scheduleId,
                                             @RequestBody UpdateScheduleResource resource) {
+        if (!ownershipService.isZoneOwnerOrAdmin(zoneId)) return ResponseEntity.status(403).build();
         var command = new UpdateScheduleCommand(scheduleId, zoneId, resource.startAt(),
                 resource.durationMinutes(), RecurrencePattern.valueOf(resource.recurrence()),
                 resource.cronExpression(), resource.enabled());
@@ -68,6 +75,7 @@ public class ScheduleController {
 
     @DeleteMapping("/{scheduleId}")
     public ResponseEntity<?> deleteSchedule(@PathVariable Long zoneId, @PathVariable Long scheduleId) {
+        if (!ownershipService.isZoneOwnerOrAdmin(zoneId)) return ResponseEntity.status(403).build();
         var command = new DeleteScheduleCommand(scheduleId, zoneId);
         var result = scheduleCommandService.deleteSchedule(command);
         return ResponseEntityAssembler.toResponseEntityFromResult(

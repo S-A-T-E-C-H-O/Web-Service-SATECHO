@@ -31,6 +31,13 @@ public class FarmRepositoryImpl implements FarmRepository {
     }
 
     @Override
+    public List<Farm> findAll() {
+        return farmPersistenceRepository.findAll().stream()
+                .map(FarmPersistenceAssembler::toDomainFromPersistence)
+                .toList();
+    }
+
+    @Override
     public Farm save(Farm farm) {
         var saved = farmPersistenceRepository.save(FarmPersistenceAssembler.toPersistenceFromDomain(farm));
         return FarmPersistenceAssembler.toDomainFromPersistence(saved);

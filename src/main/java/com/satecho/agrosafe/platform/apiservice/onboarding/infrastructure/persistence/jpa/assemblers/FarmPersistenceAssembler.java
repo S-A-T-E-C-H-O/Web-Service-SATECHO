@@ -17,6 +17,7 @@ public final class FarmPersistenceAssembler {
         domain.setLocation(entity.getLocation());
         domain.setHectares(entity.getHectares());
         domain.setCropType(entity.getCropType());
+        domain.setActive(entity.getActive() != null ? entity.getActive() : true);
         return domain;
     }
 
@@ -31,6 +32,7 @@ public final class FarmPersistenceAssembler {
         entity.setLocation(farm.getLocation());
         entity.setHectares(farm.getHectares());
         entity.setCropType(farm.getCropType());
+        entity.setActive(farm.getActive() != null ? farm.getActive() : true);
         return entity;
     }
 }

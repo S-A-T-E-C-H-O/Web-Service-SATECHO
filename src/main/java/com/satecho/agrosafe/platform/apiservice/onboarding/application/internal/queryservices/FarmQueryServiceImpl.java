@@ -28,4 +28,9 @@ public class FarmQueryServiceImpl implements FarmQueryService {
     public List<Farm> findAllByUserId(Long userId) {
         return farmRepository.findAllByUserId(userId);
     }
+
+    @Override
+    public List<Farm> findAll() {
+        return farmRepository.findAll();
+    }
 }
