@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface DeviceRepository {
     Optional<Device> findById(Long id);
+    List<Device> findAll();
     List<Device> findByUserId(Long userId);
     List<Device> findByUserIdAndType(Long userId, DeviceType type);
     List<Device> findByUserIdAndStatus(Long userId, DeviceStatus status);

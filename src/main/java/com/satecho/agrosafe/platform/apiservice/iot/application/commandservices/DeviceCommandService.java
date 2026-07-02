@@ -15,5 +15,5 @@ public interface DeviceCommandService {
     Result<Void, ApplicationError> handleDeactivate(Long deviceId);
     Result<Void, ApplicationError> handleDecommission(Long deviceId);
     Result<Device, ApplicationError> recordHeartbeat(Long deviceId, Double batteryLevel);
-    Result<BatchRegisterResult, ApplicationError> handleBatchRegister(Long userId, List<RegisterDeviceResource> resources);
+    Result<BatchRegisterResult, ApplicationError> handleBatchRegister(List<RegisterDeviceResource> resources);
 }

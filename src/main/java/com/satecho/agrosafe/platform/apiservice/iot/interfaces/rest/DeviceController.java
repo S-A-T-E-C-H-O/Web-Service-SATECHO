@@ -16,12 +16,18 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Fleet lifecycle operations (register/activate/deactivate/decommission/firmware) are
+ * restricted to fleet administrators — farmers never self-register hardware. SATECHO
+ * provisions devices and assigns them to a farm; farmers only ever read device status.
+ */
 @RestController
 @RequestMapping(value = "/api/v1/devices", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Devices", description = "Device management endpoints")
@@ -35,10 +41,10 @@ public class DeviceController {
         this.deviceQueryService = deviceQueryService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> registerDevice(@Valid @RequestBody RegisterDeviceResource resource) {
-        Long userId = SecurityContextUtil.getCurrentUserId();
-        var command = RegisterDeviceCommandFromResourceAssembler.toCommand(resource, userId);
+        var command = RegisterDeviceCommandFromResourceAssembler.toCommand(resource);
         var result = deviceCommandService.handle(command);
         return ResponseEntityAssembler.toResponseEntityFromResult(result, DeviceResourceFromEntityAssembler::toResource, HttpStatus.CREATED);
     }
@@ -61,6 +67,7 @@ public class DeviceController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{deviceId}/activate")
     public ResponseEntity<?> activateDevice(@PathVariable Long deviceId, @Valid @RequestBody ActivateDeviceResource resource) {
         var command = ActivateDeviceCommandFromResourceAssembler.toCommand(resource, deviceId);
@@ -68,6 +75,7 @@ public class DeviceController {
         return ResponseEntityAssembler.toResponseEntityFromResult(result, DeviceResourceFromEntityAssembler::toResource, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{deviceId}/deactivate")
     public ResponseEntity<?> deactivateDevice(@PathVariable Long deviceId) {
         var result = deviceCommandService.handleDeactivate(deviceId);
@@ -75,6 +83,7 @@ public class DeviceController {
         return ResponseEntity.ok(new MessageResource("Device deactivated successfully"));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{deviceId}/decommission")
     public ResponseEntity<?> decommissionDevice(@PathVariable Long deviceId) {
         var result = deviceCommandService.handleDecommission(deviceId);
@@ -82,6 +91,7 @@ public class DeviceController {
         return ResponseEntity.ok(new MessageResource("Device decommissioned successfully"));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{deviceId}/firmware")
     public ResponseEntity<?> updateFirmware(@PathVariable Long deviceId, @Valid @RequestBody UpdateFirmwareResource resource) {
         var command = new UpdateFirmwareCommand(deviceId, resource.firmwareVersion());
@@ -121,10 +131,10 @@ public class DeviceController {
                 d.getLastHeartbeatAt(), history));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/batch")
     public ResponseEntity<?> batchRegister(@Valid @RequestBody BatchRegisterResource resource) {
-        Long userId = SecurityContextUtil.getCurrentUserId();
-        var result = deviceCommandService.handleBatchRegister(userId, resource.devices());
+        var result = deviceCommandService.handleBatchRegister(resource.devices());
         if (result.isSuccess()) {
             var r = result.toOptional().orElseThrow();
             var entries = r.entries().stream()
