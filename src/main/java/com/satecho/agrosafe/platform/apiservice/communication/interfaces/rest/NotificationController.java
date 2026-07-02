@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -58,16 +59,18 @@ public class NotificationController {
 
     @GetMapping("/{notificationId}")
     public ResponseEntity<NotificationResource> getNotificationById(@PathVariable Long notificationId) {
-        SecurityContextUtil.getCurrentUserId();
-        return notificationQueryService.getById(notificationId)
-                .map(n -> ResponseEntity.ok(NotificationResourceFromEntityAssembler.toResource(n)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        var notification = notificationQueryService.getById(notificationId);
+        if (notification.isEmpty()) return ResponseEntity.notFound().build();
+        if (!isOwnerOrAdmin(notification.get().getUserId())) return ResponseEntity.status(403).build();
+        return ResponseEntity.ok(NotificationResourceFromEntityAssembler.toResource(notification.get()));
     }
 
     @PatchMapping("/{notificationId}")
     public ResponseEntity<?> updateNotification(@PathVariable Long notificationId,
                                                 @RequestBody UpdateNotificationResource resource) {
-        SecurityContextUtil.getCurrentUserId();
+        var notification = notificationQueryService.getById(notificationId);
+        if (notification.isEmpty()) return ResponseEntity.notFound().build();
+        if (!isOwnerOrAdmin(notification.get().getUserId())) return ResponseEntity.status(403).build();
         if (Boolean.TRUE.equals(resource.read())) {
             var result = notificationCommandService.markAsRead(notificationId);
             return ResponseEntityAssembler.toResponseEntityFromResult(result, NotificationResourceFromEntityAssembler::toResource, HttpStatus.OK);
@@ -75,9 +78,12 @@ public class NotificationController {
         return ResponseEntity.badRequest().build();
     }
 
+    // Internal dispatch trigger (also used by AlertNotificationEventHandler in-process) —
+    // exposed over REST only for ADMIN/ops tooling, never callable by a farmer to notify
+    // an arbitrary userId.
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/dispatch")
     public ResponseEntity<?> dispatchNotification(@RequestBody DispatchNotificationResource resource) {
-        SecurityContextUtil.getCurrentUserId();
         try {
             var command = new SendNotificationCommand(resource.userId(), NotificationType.valueOf(resource.type().toUpperCase()),
                     resource.title(), resource.body(), NotificationChannel.valueOf(resource.channel().toUpperCase()),
@@ -85,5 +91,10 @@ public class NotificationController {
             var result = notificationCommandService.sendNotification(command);
             return ResponseEntityAssembler.toResponseEntityFromResult(result, NotificationResourceFromEntityAssembler::toResource, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) { return ResponseEntity.badRequest().build(); }
+    }
+
+    private boolean isOwnerOrAdmin(Long notificationOwnerUserId) {
+        if (SecurityContextUtil.isAdmin()) return true;
+        return notificationOwnerUserId.equals(SecurityContextUtil.getCurrentUserId());
     }
 }
