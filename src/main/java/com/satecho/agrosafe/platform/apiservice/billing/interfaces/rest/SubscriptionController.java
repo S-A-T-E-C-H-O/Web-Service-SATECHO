@@ -92,7 +92,7 @@ public class SubscriptionController {
 
     private PlanResource toResource(Plan p) {
         return new PlanResource(p.getId(), p.getTier().name(), p.getName(), p.getPriceMonthly(),
-                p.getMaxHectares(), p.getMaxDevices(), p.getMaxFarms(), p.getFeatures());
+                p.getMaxDevices(), p.getMaxFarms(), p.getFeatures());
     }
 
     private SubscriptionResource toResource(Subscription s) {
