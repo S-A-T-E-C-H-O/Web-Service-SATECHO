@@ -15,4 +15,5 @@ public interface SensorReadingRepository {
     List<SensorReading> findByDeviceIdOrderByTimestampDesc(Long deviceId);
     List<SensorReading> findLatestByZoneGroupedByMetricType(Long zoneId);
     Optional<SensorReading> findLatestByDeviceId(Long deviceId);
+    long countByTimestampAfter(Instant since);
 }

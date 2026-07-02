@@ -7,12 +7,16 @@ import com.satecho.agrosafe.platform.apiservice.onboarding.domain.model.aggregat
 import com.satecho.agrosafe.platform.apiservice.onboarding.domain.model.commands.CreateZoneCommand;
 import com.satecho.agrosafe.platform.apiservice.onboarding.domain.model.commands.LinkDeviceToZoneCommand;
 import com.satecho.agrosafe.platform.apiservice.onboarding.domain.model.commands.UpdateZoneThresholdCommand;
+import com.satecho.agrosafe.platform.apiservice.onboarding.domain.model.events.ThresholdsUpdatedEvent;
 import com.satecho.agrosafe.platform.apiservice.onboarding.domain.repositories.FarmRepository;
 import com.satecho.agrosafe.platform.apiservice.onboarding.domain.repositories.ZoneRepository;
 import com.satecho.agrosafe.platform.apiservice.shared.application.result.ApplicationError;
 import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
 
 @Service
 @Transactional
@@ -21,12 +25,14 @@ public class ZoneCommandServiceImpl implements ZoneCommandService {
     private final ZoneRepository zoneRepository;
     private final FarmRepository farmRepository;
     private final OnboardingCommandService onboardingCommandService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public ZoneCommandServiceImpl(ZoneRepository zoneRepository, FarmRepository farmRepository,
-                                  OnboardingCommandService onboardingCommandService) {
+                                  OnboardingCommandService onboardingCommandService, ApplicationEventPublisher eventPublisher) {
         this.zoneRepository = zoneRepository;
         this.farmRepository = farmRepository;
         this.onboardingCommandService = onboardingCommandService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -69,6 +75,7 @@ public class ZoneCommandServiceImpl implements ZoneCommandService {
 
         farmRepository.findById(savedZone.getFarmId()).ifPresent(farm ->
                 onboardingCommandService.ensureProgress(farm.getUserId()));
+        eventPublisher.publishEvent(new ThresholdsUpdatedEvent(savedZone.getId(), savedZone.getFarmId(), Instant.now()));
 
         return Result.success(savedZone);
     }
