@@ -21,18 +21,16 @@ public class PlanCommandServiceImpl implements PlanCommandService {
 
     @Override
     public void seedDefaultPlans() {
-        seedIfMissing(PlanTier.BASIC, "Basic", 39.90, 2, 1, 2,
-                List.of("Hasta 2 hectáreas", "Sensores estándar (2 nodos)", "Reportes semanales PDF"));
-        seedIfMissing(PlanTier.PRO, "Pro", 79.99, 10, 3, 20,
-                List.of("Hasta 20 hectáreas", "Automatización completa", "Alertas SMS y Push en tiempo real", "App Premium Multi-dispositivo"));
-        seedIfMissing(PlanTier.PREMIUM, "Enterprise", 199.99, null, null, null,
-                List.of("Hectáreas ilimitadas", "API de integración personalizada", "Soporte 24/7 con técnico asignado", "Capacitación in-situ para equipos"));
+        seedIfMissing(PlanTier.FREE, "Free", 0.0, 2, 1,
+                List.of("Up to 2 devices", "1 farm", "Basic telemetry dashboard"));
+        seedIfMissing(PlanTier.BASIC, "Basic", 19.99, 10, 3,
+                List.of("Up to 10 devices", "Up to 3 farms", "Alerts and recommendations", "Email support"));
+        seedIfMissing(PlanTier.PRO, "Pro", 49.99, null, null,
+                List.of("Unlimited devices", "Unlimited farms", "Priority support", "Advanced analytics and reports"));
     }
 
-    private void seedIfMissing(PlanTier tier, String name, Double price, Integer maxDevices, Integer maxFarms, Integer maxHectares, List<String> features) {
+    private void seedIfMissing(PlanTier tier, String name, Double price, Integer maxDevices, Integer maxFarms, List<String> features) {
         if (planRepository.existsByTier(tier)) return;
-        var plan = new Plan(tier, name, price, maxDevices, maxFarms, features);
-        plan.setMaxHectares(maxHectares);
-        planRepository.save(plan);
+        planRepository.save(new Plan(tier, name, price, maxDevices, maxFarms, features));
     }
 }

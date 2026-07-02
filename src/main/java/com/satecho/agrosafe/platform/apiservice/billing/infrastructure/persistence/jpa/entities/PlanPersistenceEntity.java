@@ -27,8 +27,6 @@ public class PlanPersistenceEntity extends AuditableAbstractPersistenceEntity {
     private Integer maxDevices;
     @Column(name = "max_farms")
     private Integer maxFarms;
-    @Column(name = "max_hectares")
-    private Integer maxHectares;
     @ElementCollection
     @CollectionTable(name = "plan_features", joinColumns = @JoinColumn(name = "plan_id"))
     @Column(name = "feature", length = 200)

@@ -25,7 +25,7 @@ public class PlanLimitsServiceImpl implements PlanLimitsService {
     public boolean canRegisterDevice(Long farmerUserId) {
         var plan = subscriptionRepository.findByUserId(farmerUserId)
                 .flatMap(sub -> planRepository.findById(sub.getPlanId()))
-                .or(() -> planRepository.findByTier(PlanTier.BASIC));
+                .or(() -> planRepository.findByTier(PlanTier.FREE));
         if (plan.isEmpty()) return true; // no plans seeded yet — fail open rather than block onboarding
         int currentDeviceCount = deviceRepository.findByUserId(farmerUserId).size();
         return plan.get().allowsMoreDevices(currentDeviceCount);
