@@ -42,4 +42,7 @@ public class SensorReadingRepositoryImpl implements SensorReadingRepository {
     @Override public Optional<SensorReading> findLatestByDeviceId(Long deviceId) {
         return persistenceRepository.findLatestByDeviceId(deviceId).map(SensorReadingPersistenceAssembler::toDomainFromPersistence);
     }
+    @Override public long countByTimestampAfter(Instant since) {
+        return persistenceRepository.countByTimestampAfter(since);
+    }
 }

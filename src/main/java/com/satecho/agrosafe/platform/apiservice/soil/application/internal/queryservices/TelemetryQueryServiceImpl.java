@@ -7,6 +7,7 @@ import com.satecho.agrosafe.platform.apiservice.soil.domain.repositories.SensorR
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -44,5 +45,10 @@ public class TelemetryQueryServiceImpl implements TelemetryQueryService {
         if (query.metric() != null)
             return sensorReadingRepository.findByZoneIdAndTimestampBetweenAndMetricTypeOrderByTimestampAsc(query.zoneId(), query.from(), query.to(), query.metric());
         return sensorReadingRepository.findByZoneIdAndTimestampBetweenOrderByTimestampAsc(query.zoneId(), query.from(), query.to());
+    }
+
+    @Override
+    public long countReadingsSince(Instant since) {
+        return sensorReadingRepository.countByTimestampAfter(since);
     }
 }

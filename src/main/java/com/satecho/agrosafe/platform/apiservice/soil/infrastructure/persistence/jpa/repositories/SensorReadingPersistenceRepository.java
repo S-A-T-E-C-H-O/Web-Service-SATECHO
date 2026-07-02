@@ -23,4 +23,6 @@ public interface SensorReadingPersistenceRepository extends JpaRepository<Sensor
 
     @Query("SELECT r FROM SensorReadingPersistenceEntity r WHERE r.deviceId = :deviceId AND r.timestamp = (SELECT MAX(r2.timestamp) FROM SensorReadingPersistenceEntity r2 WHERE r2.deviceId = :deviceId)")
     Optional<SensorReadingPersistenceEntity> findLatestByDeviceId(@Param("deviceId") Long deviceId);
+
+    long countByTimestampAfter(Instant since);
 }
