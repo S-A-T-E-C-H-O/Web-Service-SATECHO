@@ -80,4 +80,28 @@ public record ApplicationError(
                 "Unexpected error in %s".formatted(context),
                 reason);
     }
+
+    public static ApplicationError invalidCredentials() {
+        return new ApplicationError("INVALID_CREDENTIALS", "Invalid email or password");
+    }
+
+    public static ApplicationError emailAlreadyRegistered(boolean pending) {
+        return new ApplicationError("EMAIL_ALREADY_REGISTERED", "Email is already registered", "pending=" + pending);
+    }
+
+    public static ApplicationError emailVerificationRequired() {
+        return new ApplicationError("EMAIL_VERIFICATION_REQUIRED", "Email verification is required", "canResend=true");
+    }
+
+    public static ApplicationError invalidVerificationToken() {
+        return new ApplicationError("INVALID_VERIFICATION_TOKEN", "Verification token is invalid");
+    }
+
+    public static ApplicationError verificationTokenExpired() {
+        return new ApplicationError("VERIFICATION_TOKEN_EXPIRED", "Verification token has expired");
+    }
+
+    public static ApplicationError resendRateLimited(long retryAfterSeconds) {
+        return new ApplicationError("VERIFICATION_RESEND_RATE_LIMITED", "Verification resend rate limit exceeded", "retryAfterSeconds=" + retryAfterSeconds);
+    }
 }

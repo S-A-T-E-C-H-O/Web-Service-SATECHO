@@ -19,6 +19,7 @@ import com.satecho.agrosafe.platform.apiservice.iam.domain.repositories.UserRepo
 import com.satecho.agrosafe.platform.apiservice.shared.application.result.ApplicationError;
 import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -33,18 +34,21 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final TokenService tokenService;
     private final RoleRepository roleRepository;
     private final EmailService emailService;
+    private final boolean emailVerificationEnabled;
 
     public UserCommandServiceImpl(
             UserRepository userRepository,
             HashingService hashingService,
             TokenService tokenService,
             RoleRepository roleRepository,
-            EmailService emailService) {
+            EmailService emailService,
+            @Value("${app.email-verification.enabled:false}") boolean emailVerificationEnabled) {
         this.userRepository = userRepository;
         this.hashingService = hashingService;
         this.tokenService = tokenService;
         this.roleRepository = roleRepository;
         this.emailService = emailService;
+        this.emailVerificationEnabled = emailVerificationEnabled;
     }
 
     @Override
@@ -94,16 +98,23 @@ public class UserCommandServiceImpl implements UserCommandService {
             }
         }
 
-        var verificationToken = UUID.randomUUID().toString().replace("-", "");
         var user = new User(command.email(), hashingService.encode(command.password()), command.fullName(), resolvedRoles);
-        user.setVerificationToken(verificationToken);
+        if (emailVerificationEnabled) {
+            user.setVerified(false);
+            user.setVerificationToken(UUID.randomUUID().toString().replace("-", ""));
+        } else {
+            user.setVerified(true);
+            user.setVerificationToken(null);
+        }
         if (isAgronomist) {
             user.setRegistrationNumber(command.registrationNumber());
             user.setSpecialty(command.specialty());
             user.setYearsOfExperience(command.yearsOfExperience());
         }
         userRepository.save(user);
-        emailService.sendVerificationEmail(command.email(), command.fullName(), verificationToken);
+        if (emailVerificationEnabled) {
+            emailService.sendVerificationEmail(command.email(), command.fullName(), user.getVerificationToken());
+        }
 
         return userRepository.findByEmail(command.email())
                 .<Result<User, ApplicationError>>map(Result::success)

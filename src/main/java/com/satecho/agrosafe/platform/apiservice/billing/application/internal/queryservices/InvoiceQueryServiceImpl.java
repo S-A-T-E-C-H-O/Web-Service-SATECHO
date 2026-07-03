@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Service("billingInvoiceQueryServiceImpl")
 public class InvoiceQueryServiceImpl implements InvoiceQueryService {
 
     private final InvoiceRepository invoiceRepository;

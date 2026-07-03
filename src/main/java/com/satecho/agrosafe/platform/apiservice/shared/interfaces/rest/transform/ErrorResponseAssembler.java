@@ -116,7 +116,11 @@ public final class ErrorResponseAssembler {
     public static HttpStatusCode toStatusFromErrorCode(String errorCode) {
         return switch (errorCode) {
             case "VALIDATION_ERROR" -> HttpStatus.BAD_REQUEST;
-            case "FORBIDDEN" -> HttpStatus.FORBIDDEN;
+            case "FORBIDDEN", "EMAIL_VERIFICATION_REQUIRED" -> HttpStatus.FORBIDDEN;
+            case "INVALID_CREDENTIALS" -> HttpStatus.UNAUTHORIZED;
+            case "INVALID_VERIFICATION_TOKEN", "VERIFICATION_TOKEN_EXPIRED" -> HttpStatus.BAD_REQUEST;
+            case "VERIFICATION_RESEND_RATE_LIMITED" -> HttpStatus.TOO_MANY_REQUESTS;
+            case "EMAIL_ALREADY_REGISTERED" -> HttpStatus.CONFLICT;
             case String s when s.endsWith("_NOT_FOUND") -> HttpStatus.NOT_FOUND;
             case "BUSINESS_RULE_VIOLATION" -> HttpStatusCode.valueOf(422);
             case String s when s.endsWith("_CONFLICT") -> HttpStatus.CONFLICT;

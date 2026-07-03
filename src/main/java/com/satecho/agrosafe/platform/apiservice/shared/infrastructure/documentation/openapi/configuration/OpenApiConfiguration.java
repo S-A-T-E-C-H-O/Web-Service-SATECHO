@@ -31,6 +31,9 @@ public class OpenApiConfiguration {
     @Value("${documentation.application.version}")
     String applicationVersion;
 
+    @Value("${app.base-url:http://localhost:8080}")
+    String publicBaseUrl;
+
     // Methods
 
     /**
@@ -62,14 +65,11 @@ public class OpenApiConfiguration {
         // Add server configurations
         openAPI.servers(List.of(
                 new Server()
+                        .url(publicBaseUrl)
+                        .description("Current API Environment"),
+                new Server()
                         .url("http://localhost:8080")
-                        .description("Local Development Environment"),
-                new Server()
-                        .url("https://staging-api.acme-learning.com")
-                        .description("Staging Environment"),
-                new Server()
-                        .url("https://api.acme-learning.com")
-                        .description("Production Environment")
+                        .description("Local Development Environment")
         ));
 
         // Add a security scheme

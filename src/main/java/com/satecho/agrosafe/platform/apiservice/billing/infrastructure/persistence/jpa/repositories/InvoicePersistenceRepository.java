@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+@Repository("billingInvoicePersistenceRepository")
 public interface InvoicePersistenceRepository extends JpaRepository<InvoicePersistenceEntity, Long> {
     List<InvoicePersistenceEntity> findByUserIdOrderByIssuedAtDesc(Long userId);
 }
