@@ -17,19 +17,41 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controller to handle operations related to agronomist clients, such as retrieving assigned clients,
+ * assigning a client to an agronomist, and finding the assigned agronomist for a farmer.
+ */
 @RestController
 @RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Agronomist Clients", description = "Client roster management for agronomists (EP-009)")
 public class ClientController {
 
+    /**
+     * Service to handle queries related to clients.
+     */
     private final ClientQueryService clientQueryService;
+
+    /**
+     * Service to handle commands related to clients.
+     */
     private final ClientCommandService clientCommandService;
 
+    /**
+     * Constructs a new ClientController with the required query and command services.
+     *
+     * @param clientQueryService the query service for client operations
+     * @param clientCommandService the command service for client operations
+     */
     public ClientController(ClientQueryService clientQueryService, ClientCommandService clientCommandService) {
         this.clientQueryService = clientQueryService;
         this.clientCommandService = clientCommandService;
     }
 
+    /**
+     * Retrieves detailed information of all clients assigned to the currently logged-in agronomist.
+     *
+     * @return a response entity containing a list of client detail resources
+     */
     @PreAuthorize("hasRole('AGRONOMIST')")
     @GetMapping("/agronomist/clients/detailed")
     public ResponseEntity<List<ClientDetailResource>> getClientsDetailed() {
@@ -42,6 +64,12 @@ public class ClientController {
         return ResponseEntity.ok(details);
     }
 
+    /**
+     * Assigns a client (farmer) to the currently logged-in agronomist.
+     *
+     * @param resource the resource representing the client assignment request
+     * @return a response entity with the assignment result status and details
+     */
     @PreAuthorize("hasRole('AGRONOMIST')")
     @PostMapping("/agronomist/clients")
     public ResponseEntity<?> assignClient(@RequestBody AssignClientResource resource) {
@@ -52,7 +80,13 @@ public class ClientController {
                 result, a -> Map.of("id", a.getId(), "farmerId", a.getFarmerUserId()), HttpStatus.CREATED);
     }
 
-    /** A farmer checking which agronomist (if any) currently advises them. */
+    /**
+     * Retrieves the agronomist assigned to a specific farmer.
+     * A farmer checking which agronomist (if any) currently advises them.
+     *
+     * @param farmerId the unique identifier of the farmer
+     * @return a response entity containing the assigned agronomist's user ID
+     */
     @GetMapping("/farmers/{farmerId}/agronomist")
     public ResponseEntity<?> getAssignedAgronomist(@PathVariable Long farmerId) {
         Long currentUserId = SecurityContextUtil.getCurrentUserId();
@@ -64,3 +98,4 @@ public class ClientController {
         return ResponseEntity.ok(Map.of("agronomistId", agronomistUserId));
     }
 }
+

@@ -11,18 +11,41 @@ import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Implementation of the {@link ClientCommandService} interface.
+ * Handles commands related to client assignments.
+ */
 @Service
 @Transactional
 public class ClientCommandServiceImpl implements ClientCommandService {
 
+    /**
+     * Repository for accessing client assignment data.
+     */
     private final ClientAssignmentRepository clientAssignmentRepository;
+
+    /**
+     * Service for querying user information.
+     */
     private final UserQueryService userQueryService;
 
+    /**
+     * Constructs a {@code ClientCommandServiceImpl} with the specified repositories and services.
+     *
+     * @param clientAssignmentRepository the repository for managing client assignments
+     * @param userQueryService the service for querying users
+     */
     public ClientCommandServiceImpl(ClientAssignmentRepository clientAssignmentRepository, UserQueryService userQueryService) {
         this.clientAssignmentRepository = clientAssignmentRepository;
         this.userQueryService = userQueryService;
     }
 
+    /**
+     * Assigns a client to an agronomist.
+     *
+     * @param command the command containing agronomist and client details
+     * @return a Result containing the ClientAssignment if successful, or an ApplicationError if not
+     */
     @Override
     public Result<ClientAssignment, ApplicationError> assignClient(AssignClientCommand command) {
         if (userQueryService.handle(new GetUserByIdQuery(command.farmerUserId())).isEmpty()) {

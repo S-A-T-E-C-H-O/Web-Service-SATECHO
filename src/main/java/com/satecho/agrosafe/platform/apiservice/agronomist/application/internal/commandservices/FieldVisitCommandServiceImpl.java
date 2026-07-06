@@ -10,16 +10,34 @@ import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Implementation of the {@link FieldVisitCommandService} interface.
+ * Handles commands related to scheduling and completing field visits.
+ */
 @Service
 @Transactional
 public class FieldVisitCommandServiceImpl implements FieldVisitCommandService {
 
+    /**
+     * Repository for accessing field visit data.
+     */
     private final FieldVisitRepository fieldVisitRepository;
 
+    /**
+     * Constructs a {@code FieldVisitCommandServiceImpl} with the specified repository.
+     *
+     * @param fieldVisitRepository the repository for managing field visits
+     */
     public FieldVisitCommandServiceImpl(FieldVisitRepository fieldVisitRepository) {
         this.fieldVisitRepository = fieldVisitRepository;
     }
 
+    /**
+     * Schedules a new field visit.
+     *
+     * @param command the command containing scheduling details
+     * @return a Result containing the scheduled FieldVisit if successful, or an ApplicationError if not
+     */
     @Override
     public Result<FieldVisit, ApplicationError> scheduleVisit(ScheduleFieldVisitCommand command) {
         var visit = new FieldVisit(command.agronomistUserId(), command.farmId(), command.scheduledAt(),
@@ -33,6 +51,12 @@ public class FieldVisitCommandServiceImpl implements FieldVisitCommandService {
         return Result.success(fieldVisitRepository.save(visit));
     }
 
+    /**
+     * Completes an existing field visit.
+     *
+     * @param command the command containing completion details
+     * @return a Result containing the completed FieldVisit if successful, or an ApplicationError if not
+     */
     @Override
     public Result<FieldVisit, ApplicationError> completeVisit(CompleteFieldVisitCommand command) {
         var visit = fieldVisitRepository.findById(command.visitId());

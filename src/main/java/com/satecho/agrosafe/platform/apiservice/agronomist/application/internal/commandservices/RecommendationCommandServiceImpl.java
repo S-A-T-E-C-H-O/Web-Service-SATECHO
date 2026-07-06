@@ -10,19 +10,42 @@ import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Implementation of the {@link RecommendationCommandService} interface.
+ * Handles commands related to creating, acknowledging, and dismissing recommendations.
+ */
 @Service
 @Transactional
 public class RecommendationCommandServiceImpl implements RecommendationCommandService {
 
+    /**
+     * Repository for accessing recommendation data.
+     */
     private final RecommendationRepository recommendationRepository;
+
+    /**
+     * Repository for accessing client assignment data.
+     */
     private final ClientAssignmentRepository clientAssignmentRepository;
 
+    /**
+     * Constructs a {@code RecommendationCommandServiceImpl} with the specified repositories.
+     *
+     * @param recommendationRepository the repository for managing recommendations
+     * @param clientAssignmentRepository the repository for managing client assignments
+     */
     public RecommendationCommandServiceImpl(RecommendationRepository recommendationRepository,
                                               ClientAssignmentRepository clientAssignmentRepository) {
         this.recommendationRepository = recommendationRepository;
         this.clientAssignmentRepository = clientAssignmentRepository;
     }
 
+    /**
+     * Creates a new recommendation.
+     *
+     * @param command the command containing recommendation details
+     * @return a Result containing the created Recommendation if successful, or an ApplicationError if not
+     */
     @Override
     public Result<Recommendation, ApplicationError> createRecommendation(CreateRecommendationCommand command) {
         if (!clientAssignmentRepository.existsByAgronomistUserIdAndFarmerUserId(
@@ -36,6 +59,13 @@ public class RecommendationCommandServiceImpl implements RecommendationCommandSe
         return Result.success(recommendationRepository.save(recommendation));
     }
 
+    /**
+     * Acknowledges a recommendation.
+     *
+     * @param recommendationId the identifier of the recommendation
+     * @param currentUserId the identifier of the user acknowledging the recommendation
+     * @return a Result containing the acknowledged Recommendation if successful, or an ApplicationError if not
+     */
     @Override
     public Result<Recommendation, ApplicationError> acknowledge(Long recommendationId, Long currentUserId) {
         var recommendation = recommendationRepository.findById(recommendationId);
@@ -50,6 +80,13 @@ public class RecommendationCommandServiceImpl implements RecommendationCommandSe
         return Result.success(recommendationRepository.save(r));
     }
 
+    /**
+     * Dismisses a recommendation.
+     *
+     * @param recommendationId the identifier of the recommendation
+     * @param currentUserId the identifier of the user dismissing the recommendation
+     * @return a Result containing the dismissed Recommendation if successful, or an ApplicationError if not
+     */
     @Override
     public Result<Recommendation, ApplicationError> dismiss(Long recommendationId, Long currentUserId) {
         var recommendation = recommendationRepository.findById(recommendationId);

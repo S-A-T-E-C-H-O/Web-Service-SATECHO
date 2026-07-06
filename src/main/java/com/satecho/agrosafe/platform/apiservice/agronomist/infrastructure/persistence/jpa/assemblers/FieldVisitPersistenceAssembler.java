@@ -3,9 +3,26 @@ package com.satecho.agrosafe.platform.apiservice.agronomist.infrastructure.persi
 import com.satecho.agrosafe.platform.apiservice.agronomist.domain.model.aggregates.FieldVisit;
 import com.satecho.agrosafe.platform.apiservice.agronomist.infrastructure.persistence.jpa.entities.FieldVisitPersistenceEntity;
 
+/**
+ * Assembler class that converts between {@link FieldVisit} domain aggregates
+ * and {@link FieldVisitPersistenceEntity} database entities.
+ * <p>
+ * This class consists exclusively of static methods to perform the mapping.
+ * </p>
+ */
 public final class FieldVisitPersistenceAssembler {
+
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     */
     private FieldVisitPersistenceAssembler() {}
 
+    /**
+     * Converts a {@link FieldVisitPersistenceEntity} to a {@link FieldVisit} domain aggregate.
+     *
+     * @param e the persistence entity to convert
+     * @return the domain aggregate, or {@code null} if the input is null
+     */
     public static FieldVisit toDomainFromPersistence(FieldVisitPersistenceEntity e) {
         if (e == null) return null;
         var d = new FieldVisit();
@@ -25,6 +42,12 @@ public final class FieldVisitPersistenceAssembler {
         return d;
     }
 
+    /**
+     * Converts a {@link FieldVisit} domain aggregate to a {@link FieldVisitPersistenceEntity}.
+     *
+     * @param d the domain aggregate to convert
+     * @return the persistence entity, or {@code null} if the input is null
+     */
     public static FieldVisitPersistenceEntity toPersistenceFromDomain(FieldVisit d) {
         if (d == null) return null;
         var e = new FieldVisitPersistenceEntity();
