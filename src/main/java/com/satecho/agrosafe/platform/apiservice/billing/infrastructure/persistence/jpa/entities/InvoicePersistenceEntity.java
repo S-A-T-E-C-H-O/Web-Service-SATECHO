@@ -9,27 +9,67 @@ import lombok.Setter;
 
 import java.time.Instant;
 
+<<<<<<< HEAD
 @Entity(name = "BillingInvoicePersistenceEntity")
 @Table(name = "billing_invoices")
+=======
+/**
+ * JPA entity mapping representing database records in the 'invoices' table.
+ */
+@Entity
+@Table(name = "invoices")
+>>>>>>> release/1.9.0
 @Getter
 @Setter
 @NoArgsConstructor
 public class InvoicePersistenceEntity extends AuditableAbstractPersistenceEntity {
+
+    /**
+     * The ID of the subscription this invoice relates to.
+     */
     @Column(name = "subscription_id", nullable = false)
     private Long subscriptionId;
+
+    /**
+     * The ID of the user billed.
+     */
     @Column(name = "user_id", nullable = false)
     private Long userId;
+
+    /**
+     * The billing transaction amount.
+     */
     @Column(name = "amount")
     private Double amount;
+
+    /**
+     * The 3-character ISO currency code.
+     */
     @Column(name = "currency", length = 3)
     private String currency;
+
+    /**
+     * The payment outcome status of this invoice.
+     */
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private InvoiceStatus status;
+
+    /**
+     * The description detailing the payment line items.
+     */
     @Column(name = "description", length = 300)
     private String description;
+
+    /**
+     * The timestamp of invoice creation.
+     */
     @Column(name = "issued_at", nullable = false)
     private Instant issuedAt;
+
+    /**
+     * The timestamp of invoice settlement.
+     */
     @Column(name = "paid_at")
     private Instant paidAt;
 }

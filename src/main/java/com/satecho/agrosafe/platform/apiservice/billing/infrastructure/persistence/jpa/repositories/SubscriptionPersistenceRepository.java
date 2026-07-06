@@ -6,7 +6,21 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+<<<<<<< HEAD
 @Repository("billingSubscriptionPersistenceRepository")
+=======
+/**
+ * Spring Data JPA repository client for the 'subscriptions' database table operations.
+ */
+@Repository
+>>>>>>> release/1.9.0
 public interface SubscriptionPersistenceRepository extends JpaRepository<SubscriptionPersistenceEntity, Long> {
+    
+    /**
+     * Finds a subscription entity matching the subscriber's user ID.
+     *
+     * @param userId the user identifier
+     * @return an {@link Optional} containing the entity if found, or empty
+     */
     Optional<SubscriptionPersistenceEntity> findByUserId(Long userId);
 }

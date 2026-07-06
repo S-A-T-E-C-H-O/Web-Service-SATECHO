@@ -13,15 +13,42 @@ import com.satecho.agrosafe.platform.apiservice.shared.application.result.Result
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Implementation of {@link SubscriptionCommandService}.
+ * Handles business operations for subscribing and cancelling subscriptions, ensuring constraints are met.
+ */
 @Service
 @Transactional
 public class SubscriptionCommandServiceImpl implements SubscriptionCommandService {
 
+    /**
+     * Repository for managing subscription persistence.
+     */
     private final SubscriptionRepository subscriptionRepository;
+
+    /**
+     * Repository for querying and persisting plan definitions.
+     */
     private final PlanRepository planRepository;
+
+    /**
+     * Repository for persisting generated invoices.
+     */
     private final InvoiceRepository invoiceRepository;
+
+    /**
+     * Repository for querying user's registered IoT devices to enforce plan limits.
+     */
     private final DeviceRepository deviceRepository;
 
+    /**
+     * Constructs a new SubscriptionCommandServiceImpl.
+     *
+     * @param subscriptionRepository the repository for managing subscriptions
+     * @param planRepository the repository for managing plans
+     * @param invoiceRepository the repository for managing invoices
+     * @param deviceRepository the repository for managing IoT devices
+     */
     public SubscriptionCommandServiceImpl(SubscriptionRepository subscriptionRepository, PlanRepository planRepository,
                                            InvoiceRepository invoiceRepository, DeviceRepository deviceRepository) {
         this.subscriptionRepository = subscriptionRepository;
@@ -30,6 +57,14 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
         this.deviceRepository = deviceRepository;
     }
 
+    /**
+     * Processes a subscription request for a user.
+     * Enforces the constraint that downgrades cannot exceed the device limits of the new target plan (EP-006-US014).
+     * Creates or updates the user's subscription and records a PAID invoice representing the billing event.
+     *
+     * @param command the subscription command containing user ID and target plan tier
+     * @return a {@link Result} containing the updated {@link Subscription} or an {@link ApplicationError}
+     */
     @Override
     public Result<Subscription, ApplicationError> subscribe(SubscribeCommand command) {
         var plan = planRepository.findByTier(command.planTier());
@@ -60,6 +95,12 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
         return Result.success(saved);
     }
 
+    /**
+     * Cancels a user's subscription, marking it as cancelled in the repository.
+     *
+     * @param userId the ID of the user whose subscription is being cancelled
+     * @return a {@link Result} containing the cancelled {@link Subscription} or an {@link ApplicationError}
+     */
     @Override
     public Result<Subscription, ApplicationError> cancel(Long userId) {
         var subscription = subscriptionRepository.findByUserId(userId);

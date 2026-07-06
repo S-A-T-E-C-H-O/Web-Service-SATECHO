@@ -6,7 +6,21 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+<<<<<<< HEAD
 @Repository("billingInvoicePersistenceRepository")
+=======
+/**
+ * Spring Data JPA repository client for the 'invoices' database table operations.
+ */
+@Repository
+>>>>>>> release/1.9.0
 public interface InvoicePersistenceRepository extends JpaRepository<InvoicePersistenceEntity, Long> {
+    
+    /**
+     * Queries database to find all invoice records for a user, sorted descending by their issued timestamp.
+     *
+     * @param userId the user identifier
+     * @return list of matching invoice entities
+     */
     List<InvoicePersistenceEntity> findByUserIdOrderByIssuedAtDesc(Long userId);
 }
