@@ -23,17 +23,43 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Controller to manage field visits for agronomists, allowing scheduling, listing, and completing visits.
+ */
 @RestController
 @RequestMapping(value = "/api/v1/agronomist/visits", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Field Visits", description = "Agronomist field visit agenda (EP-009-US008)")
 @PreAuthorize("hasRole('AGRONOMIST')")
 public class FieldVisitController {
 
+    /**
+     * Query service for field visits.
+     */
     private final FieldVisitQueryService fieldVisitQueryService;
+
+    /**
+     * Command service for field visits.
+     */
     private final FieldVisitCommandService fieldVisitCommandService;
+
+    /**
+     * Query service for farms.
+     */
     private final FarmQueryService farmQueryService;
+
+    /**
+     * Query service for users.
+     */
     private final UserQueryService userQueryService;
 
+    /**
+     * Constructs a new FieldVisitController.
+     *
+     * @param fieldVisitQueryService the query service for field visits
+     * @param fieldVisitCommandService the command service for field visits
+     * @param farmQueryService the query service for farms
+     * @param userQueryService the query service for users
+     */
     public FieldVisitController(FieldVisitQueryService fieldVisitQueryService, FieldVisitCommandService fieldVisitCommandService,
                                  FarmQueryService farmQueryService, UserQueryService userQueryService) {
         this.fieldVisitQueryService = fieldVisitQueryService;
@@ -42,6 +68,11 @@ public class FieldVisitController {
         this.userQueryService = userQueryService;
     }
 
+    /**
+     * Retrieves scheduled field visits for the currently logged-in agronomist.
+     *
+     * @return a response entity containing a list of field visit resources
+     */
     @GetMapping
     public ResponseEntity<List<FieldVisitResource>> getScheduledVisits() {
         Long agronomistUserId = SecurityContextUtil.getCurrentUserId();
@@ -50,6 +81,12 @@ public class FieldVisitController {
         return ResponseEntity.ok(visits);
     }
 
+    /**
+     * Schedules a new field visit.
+     *
+     * @param resource the resource representing the field visit details to schedule
+     * @return a response entity representing the scheduled field visit status
+     */
     @PostMapping
     public ResponseEntity<?> scheduleVisit(@RequestBody ScheduleFieldVisitResource resource) {
         Long agronomistUserId = SecurityContextUtil.getCurrentUserId();
@@ -61,6 +98,13 @@ public class FieldVisitController {
         return ResponseEntityAssembler.toResponseEntityFromResult(result, this::toResource, HttpStatus.CREATED);
     }
 
+    /**
+     * Completes an existing field visit with GPS coordinates and proof photo.
+     *
+     * @param visitId the unique identifier of the field visit
+     * @param resource the resource representing completion data (optional)
+     * @return a response entity containing the updated field visit resource
+     */
     @PostMapping("/{visitId}/complete")
     public ResponseEntity<?> completeVisit(@PathVariable Long visitId,
                                             @RequestBody(required = false) CompleteFieldVisitResource resource) {
@@ -72,6 +116,12 @@ public class FieldVisitController {
         return ResponseEntityAssembler.toResponseEntityFromResult(result, this::toResource, HttpStatus.OK);
     }
 
+    /**
+     * Converts a FieldVisit entity into its corresponding FieldVisitResource representation.
+     *
+     * @param v the field visit entity
+     * @return the field visit resource
+     */
     private FieldVisitResource toResource(FieldVisit v) {
         var farm = farmQueryService.findById(v.getFarmId()).orElse(null);
         String farmName = farm != null ? farm.getName() : null;
@@ -84,3 +134,4 @@ public class FieldVisitController {
                 v.getLatitude(), v.getLongitude(), v.getPhotoBase64());
     }
 }
+

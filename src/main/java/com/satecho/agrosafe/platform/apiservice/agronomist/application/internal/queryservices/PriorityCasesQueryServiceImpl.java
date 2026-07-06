@@ -12,22 +12,55 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of the {@link PriorityCasesQueryService} interface.
+ * Handles querying priority cases (farms with active alerts) assigned to agronomists.
+ */
 @Service
 public class PriorityCasesQueryServiceImpl implements PriorityCasesQueryService {
 
+    /**
+     * Repository for accessing client assignment data.
+     */
     private final ClientAssignmentRepository clientAssignmentRepository;
+
+    /**
+     * Service for querying farm information.
+     */
     private final FarmQueryService farmQueryService;
+
+    /**
+     * Service for querying alert information.
+     */
     private final AlertQueryService alertQueryService;
+
+    /**
+     * Service for querying user information.
+     */
     private final UserQueryService userQueryService;
 
+    /**
+     * Constructs a {@code PriorityCasesQueryServiceImpl} with the specified repositories and services.
+     *
+     * @param clientAssignmentRepository the repository for managing client assignments
+     * @param farmQueryService the service for querying farms
+     * @param alertQueryService the service for querying alerts
+     * @param userQueryService the service for querying users
+     */
     public PriorityCasesQueryServiceImpl(ClientAssignmentRepository clientAssignmentRepository, FarmQueryService farmQueryService,
-                                          AlertQueryService alertQueryService, UserQueryService userQueryService) {
+                                           AlertQueryService alertQueryService, UserQueryService userQueryService) {
         this.clientAssignmentRepository = clientAssignmentRepository;
         this.farmQueryService = farmQueryService;
         this.alertQueryService = alertQueryService;
         this.userQueryService = userQueryService;
     }
 
+    /**
+     * Retrieves all priority cases for a specific agronomist user, representing assigned farmers' farms with active alerts.
+     *
+     * @param agronomistUserId the identifier of the agronomist user
+     * @return a List of PriorityCase objects containing active alert and client details
+     */
     @Override
     public List<PriorityCase> findPriorityCases(Long agronomistUserId) {
         List<PriorityCase> cases = new ArrayList<>();

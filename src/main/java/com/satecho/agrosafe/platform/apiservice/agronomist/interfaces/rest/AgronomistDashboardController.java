@@ -13,17 +13,33 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Controller to handle agronomist dashboard queries, specifically priority cases.
+ */
 @RestController
 @RequestMapping(value = "/api/v1/dashboard", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Agronomist Dashboard", description = "Priority cases panel (EP-009-US005)")
 public class AgronomistDashboardController {
 
+    /**
+     * Service to handle priority case queries.
+     */
     private final PriorityCasesQueryService priorityCasesQueryService;
 
+    /**
+     * Constructs a new AgronomistDashboardController.
+     *
+     * @param priorityCasesQueryService the service used to query priority cases
+     */
     public AgronomistDashboardController(PriorityCasesQueryService priorityCasesQueryService) {
         this.priorityCasesQueryService = priorityCasesQueryService;
     }
 
+    /**
+     * Retrieves priority cases for the currently logged-in agronomist.
+     *
+     * @return a response entity containing a list of priority case resources
+     */
     @PreAuthorize("hasRole('AGRONOMIST')")
     @GetMapping("/priority-cases")
     public ResponseEntity<List<PriorityCaseResource>> getPriorityCases() {
@@ -35,3 +51,4 @@ public class AgronomistDashboardController {
         return ResponseEntity.ok(cases);
     }
 }
+

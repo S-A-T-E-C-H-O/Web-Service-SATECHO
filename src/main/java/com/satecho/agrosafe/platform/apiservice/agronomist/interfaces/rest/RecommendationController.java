@@ -21,16 +21,38 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller to handle agronomic recommendation operations, including retrieving recommendations,
+ * creating new recommendations, acknowledging, and dismissing them.
+ */
 @RestController
 @RequestMapping(value = "/api/v1/recommendations", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Recommendations", description = "Agronomist recommendations to farmers (EP-009-US004)")
 @PreAuthorize("isAuthenticated()")
 public class RecommendationController {
 
+    /**
+     * Query service for recommendations.
+     */
     private final RecommendationQueryService recommendationQueryService;
+
+    /**
+     * Command service for recommendations.
+     */
     private final RecommendationCommandService recommendationCommandService;
+
+    /**
+     * Query service for users.
+     */
     private final UserQueryService userQueryService;
 
+    /**
+     * Constructs a new RecommendationController.
+     *
+     * @param recommendationQueryService the query service for recommendations
+     * @param recommendationCommandService the command service for recommendations
+     * @param userQueryService the query service for users
+     */
     public RecommendationController(RecommendationQueryService recommendationQueryService,
                                      RecommendationCommandService recommendationCommandService,
                                      UserQueryService userQueryService) {
@@ -39,7 +61,12 @@ public class RecommendationController {
         this.userQueryService = userQueryService;
     }
 
-    /** Farmers see recommendations addressed to them; agronomists see the ones they authored. */
+    /**
+     * Retrieves recommendations.
+     * Farmers see recommendations addressed to them; agronomists see the ones they authored.
+     *
+     * @return a response entity containing a list of recommendation resources
+     */
     @GetMapping
     public ResponseEntity<List<RecommendationResource>> getRecommendations() {
         Long userId = SecurityContextUtil.getCurrentUserId();
@@ -52,6 +79,13 @@ public class RecommendationController {
         return ResponseEntity.ok(recommendations.stream().map(this::toResource).toList());
     }
 
+    /**
+     * Creates a new recommendation.
+     * Only agronomists are allowed to perform this operation.
+     *
+     * @param resource the resource representing the recommendation creation request
+     * @return a response entity containing the created recommendation resource
+     */
     @PreAuthorize("hasRole('AGRONOMIST')")
     @PostMapping
     public ResponseEntity<?> createRecommendation(@RequestBody CreateRecommendationResource resource) {
@@ -64,6 +98,12 @@ public class RecommendationController {
         return ResponseEntityAssembler.toResponseEntityFromResult(result, this::toResource, HttpStatus.CREATED);
     }
 
+    /**
+     * Acknowledges a recommendation.
+     *
+     * @param recommendationId the unique identifier of the recommendation
+     * @return a response entity containing the acknowledged recommendation resource
+     */
     @PatchMapping("/{recommendationId}/acknowledge")
     public ResponseEntity<?> acknowledge(@PathVariable Long recommendationId) {
         Long userId = SecurityContextUtil.getCurrentUserId();
@@ -71,6 +111,12 @@ public class RecommendationController {
         return ResponseEntityAssembler.toResponseEntityFromResult(result, this::toResource, HttpStatus.OK);
     }
 
+    /**
+     * Dismisses a recommendation.
+     *
+     * @param recommendationId the unique identifier of the recommendation
+     * @return a response entity containing the dismissed recommendation resource
+     */
     @PatchMapping("/{recommendationId}/dismiss")
     public ResponseEntity<?> dismiss(@PathVariable Long recommendationId) {
         Long userId = SecurityContextUtil.getCurrentUserId();
@@ -78,9 +124,16 @@ public class RecommendationController {
         return ResponseEntityAssembler.toResponseEntityFromResult(result, this::toResource, HttpStatus.OK);
     }
 
+    /**
+     * Converts a Recommendation entity into its corresponding RecommendationResource representation.
+     *
+     * @param r the recommendation entity
+     * @return the recommendation resource
+     */
     private RecommendationResource toResource(Recommendation r) {
         return new RecommendationResource(r.getId(), r.getZoneId(), r.getAgronomistUserId(),
                 r.getPriority().name(), r.getStatus().name(), r.getTitle(), r.getDescription(),
                 r.getRecommendedActions(), r.getGeneratedAt());
     }
 }
+
