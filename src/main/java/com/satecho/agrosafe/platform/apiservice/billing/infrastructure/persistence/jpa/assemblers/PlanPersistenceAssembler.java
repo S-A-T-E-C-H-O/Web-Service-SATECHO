@@ -5,9 +5,22 @@ import com.satecho.agrosafe.platform.apiservice.billing.infrastructure.persisten
 
 import java.util.ArrayList;
 
+/**
+ * Mapper utility to convert subscription plans between domain models and JPA database entities.
+ */
 public final class PlanPersistenceAssembler {
+
+    /**
+     * Private constructor to prevent instantiation of utility mapper class.
+     */
     private PlanPersistenceAssembler() {}
 
+    /**
+     * Converts a JPA persistence entity into a domain Plan aggregate root.
+     *
+     * @param e the database entity
+     * @return the initialized domain aggregate, or null if the entity is null
+     */
     public static Plan toDomainFromPersistence(PlanPersistenceEntity e) {
         if (e == null) return null;
         var d = new Plan();
@@ -21,6 +34,12 @@ public final class PlanPersistenceAssembler {
         return d;
     }
 
+    /**
+     * Converts a domain Plan aggregate root into a JPA persistence entity.
+     *
+     * @param d the domain aggregate
+     * @return the database persistence entity, or null if the domain object is null
+     */
     public static PlanPersistenceEntity toPersistenceFromDomain(Plan d) {
         if (d == null) return null;
         var e = new PlanPersistenceEntity();
