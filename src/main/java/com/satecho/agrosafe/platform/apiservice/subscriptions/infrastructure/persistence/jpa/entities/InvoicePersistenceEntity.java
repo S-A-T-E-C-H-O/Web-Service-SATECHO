@@ -9,8 +9,8 @@ import lombok.Setter;
 
 import java.time.Instant;
 
-@Entity
-@Table(name = "invoices")
+@Entity(name = "SubscriptionsInvoicePersistenceEntity")
+@Table(name = "subscription_invoices")
 @Getter
 @Setter
 @NoArgsConstructor

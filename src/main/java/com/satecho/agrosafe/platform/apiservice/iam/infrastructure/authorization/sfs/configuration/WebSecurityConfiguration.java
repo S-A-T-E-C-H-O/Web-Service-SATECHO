@@ -6,6 +6,7 @@ import com.satecho.agrosafe.platform.apiservice.iam.infrastructure.tokens.jwt.Be
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -31,6 +32,7 @@ import java.util.List;
  */
 @Configuration
 @EnableMethodSecurity
+@EnableAsync
 public class WebSecurityConfiguration {
 
     private final UserDetailsService userDetailsService;
@@ -90,7 +92,13 @@ public class WebSecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(configurer -> configurer.configurationSource(request -> {
             var cors = new CorsConfiguration();
-            cors.setAllowedOrigins(List.of("*"));
+            cors.setAllowedOriginPatterns(List.of(
+                    "http://localhost:5173",
+                    "http://localhost:3000",
+                    "https://*.web.app",
+                    "https://*.firebaseapp.com",
+                    "https://satecho-web-application.vercel.app",
+                    "https://satecho-web-application-*.vercel.app"));
             cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
             cors.setAllowedHeaders(List.of("*"));
             return cors;
@@ -101,6 +109,7 @@ public class WebSecurityConfiguration {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(
                                 "/api/v1/authentication/**",
+                                "/api/v1/edge/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",

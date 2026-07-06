@@ -28,7 +28,7 @@ import java.util.List;
  * REST controller class providing endpoints for managing plans, user subscriptions, and billing invoices.
  */
 @RestController
-@RequestMapping(value = "/api/v1/subscriptions", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/billing/subscriptions", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Subscriptions", description = "Plans, subscriptions, and billing history (EP-012)")
 @PreAuthorize("isAuthenticated()")
 public class SubscriptionController {

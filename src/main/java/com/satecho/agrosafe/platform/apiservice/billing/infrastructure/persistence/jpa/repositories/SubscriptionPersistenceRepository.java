@@ -6,10 +6,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+<<<<<<< HEAD
+@Repository("billingSubscriptionPersistenceRepository")
+=======
 /**
  * Spring Data JPA repository client for the 'subscriptions' database table operations.
  */
 @Repository
+>>>>>>> release/1.9.0
 public interface SubscriptionPersistenceRepository extends JpaRepository<SubscriptionPersistenceEntity, Long> {
     
     /**

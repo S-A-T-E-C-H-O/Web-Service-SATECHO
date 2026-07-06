@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
+@Repository("subscriptionsSubscriptionPersistenceRepository")
 public interface SubscriptionPersistenceRepository extends JpaRepository<SubscriptionPersistenceEntity, Long> {
     Optional<SubscriptionPersistenceEntity> findByUserId(Long userId);
 }

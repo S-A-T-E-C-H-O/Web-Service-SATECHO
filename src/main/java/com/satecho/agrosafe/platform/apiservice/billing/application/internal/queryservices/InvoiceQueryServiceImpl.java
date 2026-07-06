@@ -7,11 +7,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+<<<<<<< HEAD
+@Service("billingInvoiceQueryServiceImpl")
+=======
 /**
  * Implementation of {@link InvoiceQueryService}.
  * Handles querying billing invoices for users.
  */
 @Service
+>>>>>>> release/1.9.0
 public class InvoiceQueryServiceImpl implements InvoiceQueryService {
 
     /**

@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service("subscriptionsInvoiceQueryServiceImpl")
 @Transactional(readOnly = true)
 public class InvoiceQueryServiceImpl implements InvoiceQueryService {
 

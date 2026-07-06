@@ -6,10 +6,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+<<<<<<< HEAD
+@Repository("billingInvoicePersistenceRepository")
+=======
 /**
  * Spring Data JPA repository client for the 'invoices' database table operations.
  */
 @Repository
+>>>>>>> release/1.9.0
 public interface InvoicePersistenceRepository extends JpaRepository<InvoicePersistenceEntity, Long> {
     
     /**

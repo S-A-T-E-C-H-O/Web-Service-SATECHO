@@ -9,11 +9,16 @@ import lombok.Setter;
 
 import java.time.Instant;
 
+<<<<<<< HEAD
+@Entity(name = "BillingSubscriptionPersistenceEntity")
+@Table(name = "billing_subscriptions")
+=======
 /**
  * JPA entity mapping representing active user subscriptions in the 'subscriptions' table.
  */
 @Entity
 @Table(name = "subscriptions")
+>>>>>>> release/1.9.0
 @Getter
 @Setter
 @NoArgsConstructor

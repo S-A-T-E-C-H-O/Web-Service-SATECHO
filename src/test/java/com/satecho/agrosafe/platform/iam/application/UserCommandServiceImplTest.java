@@ -17,12 +17,13 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,6 +31,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,7 +44,13 @@ class UserCommandServiceImplTest {
     @Mock RoleRepository roleRepository;
     @Mock EmailService emailService;
 
-    @InjectMocks UserCommandServiceImpl service;
+    UserCommandServiceImpl service;
+
+    @BeforeEach
+    void setUp() {
+        service = new UserCommandServiceImpl(userRepository, hashingService, tokenService, roleRepository,
+                emailService, 1440, 60, false);
+    }
 
     // ── SignInCommand ─────────────────────────────────────────────────────────
 
@@ -115,14 +123,15 @@ class UserCommandServiceImplTest {
     }
 
     @Test
-    @DisplayName("handle(SignUpCommand): valid command saves user, sends email, returns success")
-    void signUp_valid_savesUserSendsEmailAndReturnsSuccess() {
+    @DisplayName("handle(SignUpCommand): valid command saves an active user without sending email when verification is disabled")
+    void signUp_valid_savesActiveUserWithoutEmailWhenVerificationDisabled() {
         Role farmerRole = new Role(Roles.ROLE_FARMER);
         User savedUser = new User("new@example.com", "encoded", "Name", List.of(farmerRole));
 
         when(userRepository.existsByEmail("new@example.com")).thenReturn(false);
         when(roleRepository.findByName(Roles.ROLE_FARMER)).thenReturn(Optional.of(farmerRole));
         when(hashingService.encode("pass")).thenReturn("encoded");
+        when(tokenService.generateToken("new@example.com")).thenReturn("jwt-token");
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
         when(userRepository.findByEmail("new@example.com")).thenReturn(Optional.of(savedUser));
 
@@ -130,7 +139,7 @@ class UserCommandServiceImplTest {
 
         assertThat(result.isSuccess()).isTrue();
         verify(userRepository).save(any(User.class));
-        verify(emailService).sendVerificationEmail(eq("new@example.com"), eq("Name"), anyString());
+        verify(emailService, never()).sendVerificationEmail(eq("new@example.com"), eq("Name"), anyString());
     }
 
     @Test
@@ -153,7 +162,7 @@ class UserCommandServiceImplTest {
     @Test
     @DisplayName("verifyAccount: token not found returns failure")
     void verifyAccount_tokenNotFound_returnsFailure() {
-        when(userRepository.findByVerificationToken("bad-token")).thenReturn(Optional.empty());
+        when(userRepository.findByVerificationToken(anyString())).thenReturn(Optional.empty());
         var result = service.verifyAccount(new VerifyAccountCommand("bad-token"));
         assertThat(result.isFailure()).isTrue();
     }
@@ -162,9 +171,11 @@ class UserCommandServiceImplTest {
     @DisplayName("verifyAccount: valid token sets verified=true, clears token, returns success")
     void verifyAccount_validToken_setsVerifiedAndClearsToken() {
         User user = new User("user@example.com", "hashed", "User");
-        user.setVerificationToken("valid-token");
-        when(userRepository.findByVerificationToken("valid-token")).thenReturn(Optional.of(user));
+        user.setVerificationToken("hashed-token");
+        user.setVerificationTokenExpiresAt(Instant.now().plusSeconds(3600));
+        when(userRepository.findByVerificationToken(anyString())).thenReturn(Optional.of(user));
         when(userRepository.save(user)).thenReturn(user);
+        when(tokenService.generateToken("user@example.com")).thenReturn("jwt-token");
 
         var result = service.verifyAccount(new VerifyAccountCommand("valid-token"));
 
