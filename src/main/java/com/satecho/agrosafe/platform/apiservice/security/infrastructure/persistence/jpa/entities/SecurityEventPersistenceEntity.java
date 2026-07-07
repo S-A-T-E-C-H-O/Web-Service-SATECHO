@@ -40,7 +40,6 @@ public class SecurityEventPersistenceEntity extends AuditableAbstractPersistence
     private Instant acknowledgedAt;
     @Column(name = "location_description", length = 500)
     private String locationDescription;
-    @Lob
     @Column(name = "raw_data", columnDefinition = "TEXT")
     private String rawData;
     @Column(name = "pulse_duration_ms")
