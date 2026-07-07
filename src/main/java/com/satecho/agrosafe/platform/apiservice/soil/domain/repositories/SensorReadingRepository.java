@@ -13,7 +13,10 @@ public interface SensorReadingRepository {
     List<SensorReading> findByZoneIdAndTimestampBetweenOrderByTimestampAsc(Long zoneId, Instant from, Instant to);
     List<SensorReading> findByZoneIdAndTimestampBetweenAndMetricTypeOrderByTimestampAsc(Long zoneId, Instant from, Instant to, MetricType metricType);
     List<SensorReading> findByDeviceIdOrderByTimestampDesc(Long deviceId);
+    List<SensorReading> findByDeviceIdAndTimestampBetweenOrderByTimestampAsc(Long deviceId, Instant from, Instant to);
+    List<SensorReading> findByDeviceIdAndTimestampBetweenAndMetricTypeOrderByTimestampAsc(Long deviceId, Instant from, Instant to, MetricType metricType);
     List<SensorReading> findLatestByZoneGroupedByMetricType(Long zoneId);
+    List<SensorReading> findLatestByDeviceGroupedByMetricType(Long deviceId);
     Optional<SensorReading> findLatestByDeviceId(Long deviceId);
     long countByTimestampAfter(Instant since);
 }

@@ -50,4 +50,19 @@ public class SecurityEventRepositoryImpl implements SecurityEventRepository {
                 .map(SecurityEventPersistenceAssembler::toDomainFromPersistence)
                 .toList();
     }
+
+    @Override
+    public List<SecurityEvent> findByDeviceIdWithFilters(Long deviceId, Instant from, Instant to,
+                                                         EventSeverity severity, EventClassification classification,
+                                                         int limit, int page) {
+        var spec = hasDeviceId(deviceId)
+                .and(detectedAtGreaterThanOrEqualTo(from))
+                .and(detectedAtLessThanOrEqualTo(to))
+                .and(hasSeverity(severity))
+                .and(hasClassification(classification));
+        var pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "detectedAt"));
+        return persistenceRepository.findAll(spec, pageable).stream()
+                .map(SecurityEventPersistenceAssembler::toDomainFromPersistence)
+                .toList();
+    }
 }

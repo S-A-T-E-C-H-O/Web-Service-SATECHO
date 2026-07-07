@@ -36,8 +36,17 @@ public class SensorReadingRepositoryImpl implements SensorReadingRepository {
     @Override public List<SensorReading> findByDeviceIdOrderByTimestampDesc(Long deviceId) {
         return persistenceRepository.findByDeviceIdOrderByTimestampDesc(deviceId).stream().map(SensorReadingPersistenceAssembler::toDomainFromPersistence).toList();
     }
+    @Override public List<SensorReading> findByDeviceIdAndTimestampBetweenOrderByTimestampAsc(Long deviceId, Instant from, Instant to) {
+        return persistenceRepository.findByDeviceIdAndTimestampBetweenOrderByTimestampAsc(deviceId, from, to).stream().map(SensorReadingPersistenceAssembler::toDomainFromPersistence).toList();
+    }
+    @Override public List<SensorReading> findByDeviceIdAndTimestampBetweenAndMetricTypeOrderByTimestampAsc(Long deviceId, Instant from, Instant to, MetricType metricType) {
+        return persistenceRepository.findByDeviceIdAndTimestampBetweenAndReadingValue_MetricTypeOrderByTimestampAsc(deviceId, from, to, metricType).stream().map(SensorReadingPersistenceAssembler::toDomainFromPersistence).toList();
+    }
     @Override public List<SensorReading> findLatestByZoneGroupedByMetricType(Long zoneId) {
         return persistenceRepository.findLatestByZoneGroupedByMetricType(zoneId).stream().map(SensorReadingPersistenceAssembler::toDomainFromPersistence).toList();
+    }
+    @Override public List<SensorReading> findLatestByDeviceGroupedByMetricType(Long deviceId) {
+        return persistenceRepository.findLatestByDeviceGroupedByMetricType(deviceId).stream().map(SensorReadingPersistenceAssembler::toDomainFromPersistence).toList();
     }
     @Override public Optional<SensorReading> findLatestByDeviceId(Long deviceId) {
         return persistenceRepository.findLatestByDeviceId(deviceId).map(SensorReadingPersistenceAssembler::toDomainFromPersistence);

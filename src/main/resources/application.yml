@@ -136,6 +136,10 @@ authorization:
 app:
   email-verification:
     enabled: ${APP_EMAIL_VERIFICATION_ENABLED:false}
+  edge:
+    demo-shared-device:
+      enabled: ${APP_EDGE_DEMO_SHARED_DEVICE_ENABLED:true}
+      serial-number: ${APP_EDGE_DEMO_SHARED_DEVICE_SERIAL_NUMBER:SEN-SAT-0401}
   jwt:
     secret: ${JWT_SECRET:your-super-secret-key-change-this-in-production-at-least-32-characters-long}
     expiration: 86400000  # 24 hours

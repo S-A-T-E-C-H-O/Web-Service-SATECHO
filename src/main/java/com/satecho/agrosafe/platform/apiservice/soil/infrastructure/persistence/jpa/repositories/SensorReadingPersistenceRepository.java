@@ -17,9 +17,14 @@ public interface SensorReadingPersistenceRepository extends JpaRepository<Sensor
     List<SensorReadingPersistenceEntity> findByZoneIdAndTimestampBetweenOrderByTimestampAsc(Long zoneId, Instant from, Instant to);
     List<SensorReadingPersistenceEntity> findByZoneIdAndTimestampBetweenAndReadingValue_MetricTypeOrderByTimestampAsc(Long zoneId, Instant from, Instant to, MetricType metricType);
     List<SensorReadingPersistenceEntity> findByDeviceIdOrderByTimestampDesc(Long deviceId);
+    List<SensorReadingPersistenceEntity> findByDeviceIdAndTimestampBetweenOrderByTimestampAsc(Long deviceId, Instant from, Instant to);
+    List<SensorReadingPersistenceEntity> findByDeviceIdAndTimestampBetweenAndReadingValue_MetricTypeOrderByTimestampAsc(Long deviceId, Instant from, Instant to, MetricType metricType);
 
     @Query("SELECT r FROM SensorReadingPersistenceEntity r WHERE r.zoneId = :zoneId AND r.timestamp IN (SELECT MAX(r2.timestamp) FROM SensorReadingPersistenceEntity r2 WHERE r2.zoneId = :zoneId GROUP BY r2.readingValue.metricType) ORDER BY r.readingValue.metricType")
     List<SensorReadingPersistenceEntity> findLatestByZoneGroupedByMetricType(@Param("zoneId") Long zoneId);
+
+    @Query("SELECT r FROM SensorReadingPersistenceEntity r WHERE r.deviceId = :deviceId AND r.timestamp IN (SELECT MAX(r2.timestamp) FROM SensorReadingPersistenceEntity r2 WHERE r2.deviceId = :deviceId GROUP BY r2.readingValue.metricType) ORDER BY r.readingValue.metricType")
+    List<SensorReadingPersistenceEntity> findLatestByDeviceGroupedByMetricType(@Param("deviceId") Long deviceId);
 
     @Query("SELECT r FROM SensorReadingPersistenceEntity r WHERE r.deviceId = :deviceId AND r.timestamp = (SELECT MAX(r2.timestamp) FROM SensorReadingPersistenceEntity r2 WHERE r2.deviceId = :deviceId)")
     Optional<SensorReadingPersistenceEntity> findLatestByDeviceId(@Param("deviceId") Long deviceId);

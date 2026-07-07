@@ -14,4 +14,7 @@ public interface SecurityEventRepository {
     List<SecurityEvent> findByFarmIdWithFilters(Long farmId, Instant from, Instant to,
                                                 EventSeverity severity, EventClassification classification,
                                                 int limit, int page);
+    List<SecurityEvent> findByDeviceIdWithFilters(Long deviceId, Instant from, Instant to,
+                                                  EventSeverity severity, EventClassification classification,
+                                                  int limit, int page);
 }

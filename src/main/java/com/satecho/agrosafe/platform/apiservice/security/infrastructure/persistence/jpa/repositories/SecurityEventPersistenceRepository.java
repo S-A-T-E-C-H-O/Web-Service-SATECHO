@@ -29,6 +29,10 @@ public interface SecurityEventPersistenceRepository extends JpaRepository<Securi
         return (root, query, builder) -> builder.equal(root.get("farmId"), farmId);
     }
 
+    static Specification<SecurityEventPersistenceEntity> hasDeviceId(Long deviceId) {
+        return (root, query, builder) -> builder.equal(root.get("deviceId"), deviceId);
+    }
+
     static Specification<SecurityEventPersistenceEntity> detectedAtGreaterThanOrEqualTo(Instant from) {
         return (root, query, builder) -> from == null ? builder.conjunction() : builder.greaterThanOrEqualTo(root.get("detectedAt"), from);
     }

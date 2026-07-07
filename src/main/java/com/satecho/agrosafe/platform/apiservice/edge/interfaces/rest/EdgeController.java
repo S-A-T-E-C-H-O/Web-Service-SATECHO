@@ -2,6 +2,7 @@ package com.satecho.agrosafe.platform.apiservice.edge.interfaces.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.satecho.agrosafe.platform.apiservice.edge.application.services.DemoSharedDeviceLinkService;
 import com.satecho.agrosafe.platform.apiservice.iot.application.commandservices.DeviceCommandService;
 import com.satecho.agrosafe.platform.apiservice.iot.domain.model.aggregates.Device;
 import com.satecho.agrosafe.platform.apiservice.iot.domain.repositories.DeviceRepository;
@@ -62,6 +63,7 @@ public class EdgeController {
     private final FarmQueryService farmQueryService;
     private final ZoneQueryService zoneQueryService;
     private final ZoneCommandService zoneCommandService;
+    private final DemoSharedDeviceLinkService demoSharedDeviceLinkService;
     private final ObjectMapper objectMapper;
     private final String edgeApiKey;
 
@@ -73,6 +75,7 @@ public class EdgeController {
                           FarmQueryService farmQueryService,
                           ZoneQueryService zoneQueryService,
                           ZoneCommandService zoneCommandService,
+                          DemoSharedDeviceLinkService demoSharedDeviceLinkService,
                           ObjectMapper objectMapper,
                           @Value("${mqtt.edge.api-key}") String edgeApiKey) {
         this.telemetryCommandService = telemetryCommandService;
@@ -83,6 +86,7 @@ public class EdgeController {
         this.farmQueryService = farmQueryService;
         this.zoneQueryService = zoneQueryService;
         this.zoneCommandService = zoneCommandService;
+        this.demoSharedDeviceLinkService = demoSharedDeviceLinkService;
         this.objectMapper = objectMapper;
         this.edgeApiKey = edgeApiKey;
     }
@@ -254,6 +258,35 @@ public class EdgeController {
                 linkedZone.getDeviceId()));
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping(value = "/devices/claim-demo", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> claimDemoDevice(@RequestBody EdgeDemoDeviceClaimResource resource) {
+        var currentUserId = SecurityContextUtil.getCurrentUserId();
+        if (resource.farmId() == null || resource.zoneId() == null) {
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResource("VALIDATION_ERROR", "farm_id and zone_id are required"));
+        }
+        try {
+            var link = demoSharedDeviceLinkService.claim(currentUserId, resource.farmId(), resource.zoneId());
+            return ResponseEntity.ok(new EdgeDemoDeviceClaimResponseResource(
+                    link.getUserId(),
+                    link.getFarmId(),
+                    link.getZoneId(),
+                    link.getPhysicalDeviceId(),
+                    link.getSerialNumber(),
+                    link.getActive()));
+        } catch (SecurityException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ErrorResource("FARM_NOT_OWNED", ex.getMessage()));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ErrorResource("DEMO_DEVICE_CLAIM_INVALID", ex.getMessage()));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body(new ErrorResource("DEMO_DEVICE_UNAVAILABLE", ex.getMessage()));
+        }
+    }
+
     @PostMapping(value = "/devices/{deviceId}/heartbeat", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> recordHeartbeat(@PathVariable Long deviceId,
                                              @RequestHeader(value = EDGE_API_KEY_HEADER, required = false) String apiKeyHeader,
@@ -299,11 +332,13 @@ public class EdgeController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(new ErrorResource("FARM_INACTIVE", "This farm is inactive and does not accept edge data"));
         }
-        if (!device.get().getUserId().equals(farm.get().getUserId())) {
+        boolean demoLinkAllowsMapping = demoSharedDeviceLinkService.isPhysicalDemoDevice(deviceId)
+                && demoSharedDeviceLinkService.hasActiveLinkForZone(deviceId, zoneId);
+        if (!device.get().getUserId().equals(farm.get().getUserId()) && !demoLinkAllowsMapping) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ErrorResource("DEVICE_ZONE_OWNER_MISMATCH", "Device and zone belong to different users"));
         }
-        if (requireZoneLinkedDevice && zone.get().getDeviceId() != null && !zone.get().getDeviceId().equals(deviceId)) {
+        if (requireZoneLinkedDevice && !demoLinkAllowsMapping && zone.get().getDeviceId() != null && !zone.get().getDeviceId().equals(deviceId)) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ErrorResource("DEVICE_NOT_LINKED_TO_ZONE", "The zone is linked to a different device"));
         }
@@ -325,7 +360,9 @@ public class EdgeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResource("DEVICE_NOT_FOUND", "Device not found"));
         }
-        if (!device.get().getUserId().equals(farm.get().getUserId())) {
+        boolean demoLinkAllowsMapping = demoSharedDeviceLinkService.isPhysicalDemoDevice(deviceId)
+                && demoSharedDeviceLinkService.hasActiveLink(deviceId, farmId, zoneId);
+        if (!device.get().getUserId().equals(farm.get().getUserId()) && !demoLinkAllowsMapping) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ErrorResource("DEVICE_FARM_OWNER_MISMATCH", "Device and farm belong to different users"));
         }
@@ -490,6 +527,22 @@ public class EdgeController {
             Long farmId,
             Long zoneId,
             Long linkedZoneDeviceId
+    ) {
+    }
+
+    public record EdgeDemoDeviceClaimResource(
+            @JsonProperty("farm_id") Long farmId,
+            @JsonProperty("zone_id") Long zoneId
+    ) {
+    }
+
+    public record EdgeDemoDeviceClaimResponseResource(
+            Long userId,
+            Long farmId,
+            Long zoneId,
+            Long physicalDeviceId,
+            String serialNumber,
+            Boolean active
     ) {
     }
 }
