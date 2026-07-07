@@ -332,13 +332,12 @@ public class EdgeController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(new ErrorResource("FARM_INACTIVE", "This farm is inactive and does not accept edge data"));
         }
-        boolean demoLinkAllowsMapping = demoSharedDeviceLinkService.isPhysicalDemoDevice(deviceId)
-                && demoSharedDeviceLinkService.hasActiveLinkForZone(deviceId, zoneId);
-        if (!device.get().getUserId().equals(farm.get().getUserId()) && !demoLinkAllowsMapping) {
+        boolean demoPhysicalDevice = demoSharedDeviceLinkService.isPhysicalDemoDevice(deviceId);
+        if (!device.get().getUserId().equals(farm.get().getUserId()) && !demoPhysicalDevice) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ErrorResource("DEVICE_ZONE_OWNER_MISMATCH", "Device and zone belong to different users"));
         }
-        if (requireZoneLinkedDevice && !demoLinkAllowsMapping && zone.get().getDeviceId() != null && !zone.get().getDeviceId().equals(deviceId)) {
+        if (requireZoneLinkedDevice && !demoPhysicalDevice && zone.get().getDeviceId() != null && !zone.get().getDeviceId().equals(deviceId)) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ErrorResource("DEVICE_NOT_LINKED_TO_ZONE", "The zone is linked to a different device"));
         }
@@ -360,9 +359,8 @@ public class EdgeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResource("DEVICE_NOT_FOUND", "Device not found"));
         }
-        boolean demoLinkAllowsMapping = demoSharedDeviceLinkService.isPhysicalDemoDevice(deviceId)
-                && demoSharedDeviceLinkService.hasActiveLink(deviceId, farmId, zoneId);
-        if (!device.get().getUserId().equals(farm.get().getUserId()) && !demoLinkAllowsMapping) {
+        boolean demoPhysicalDevice = demoSharedDeviceLinkService.isPhysicalDemoDevice(deviceId);
+        if (!device.get().getUserId().equals(farm.get().getUserId()) && !demoPhysicalDevice) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ErrorResource("DEVICE_FARM_OWNER_MISMATCH", "Device and farm belong to different users"));
         }
