@@ -1,13 +1,16 @@
 spring:
   profiles:
     active: dev
-    application:
-      name: agrosafe-backend
+  application:
+    name: agrosafe-backend
 
   # JPA Configuration
+  # dev: Hibernate creates/updates the schema (Flyway migrations are written
+  # to be no-ops on a fresh DB and to apply on pre-existing ones). prod uses
+  # validate — see application-prod.yml.
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
       naming:
         physical-strategy: com.satecho.agrosafe.platform.apiservice.shared.infrastructure.persistence.jpa.configuration.strategy.SnakeCaseWithPluralizedTablePhysicalNamingStrategy
     show-sql: false
@@ -139,6 +142,10 @@ app:
     refresh-expiration: 604800000  # 7 days
   device:
     api-key-header: X-Device-Api-Key
+  webhooks:
+    # Shared secret the payment provider must send in X-Webhook-Signature.
+    # Empty (the default) rejects every webhook call — closed by default.
+    payment-secret: ${WEBHOOK_PAYMENT_SECRET:}
   base-url: ${APP_BASE_URL:http://localhost:8080}
   frontend-url: ${APP_FRONTEND_URL:http://localhost:5173}
   verification:
