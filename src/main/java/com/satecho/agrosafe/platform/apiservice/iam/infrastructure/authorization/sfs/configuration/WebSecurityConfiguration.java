@@ -109,7 +109,10 @@ public class WebSecurityConfiguration {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(
                                 "/api/v1/authentication/**",
-                                "/api/v1/edge/**",
+                                "/api/v1/edge/devices/*/soil-readings",
+                                "/api/v1/edge/farms/*/devices/*/security-events",
+                                "/api/v1/edge/devices/*/actuator-logs",
+                                "/api/v1/edge/devices/*/heartbeat",
                                 // External payment providers cannot send a user JWT.
                                 // The controller enforces its own shared-secret
                                 // signature header instead (see PaymentWebhookController).
