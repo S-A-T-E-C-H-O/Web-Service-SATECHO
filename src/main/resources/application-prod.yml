@@ -1,7 +1,11 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      # Schema changes in prod must arrive as Flyway migrations, never via
+      # Hibernate auto-DDL. If boot fails validation here, a migration is
+      # missing — that failure is intentional and must not be silenced by
+      # switching back to update.
+      ddl-auto: validate
     show-sql: false
     properties:
       hibernate:
@@ -17,20 +21,23 @@ spring:
       data-source-properties:
         prepareThreshold: ${DATABASE_PREPARE_THRESHOLD:0}
 
+  # RabbitMQ/Redis are not consumed by any code path today. Defaults keep the
+  # context bootable when the env vars are absent (an unresolved placeholder
+  # aborts startup); connections are lazy, so nothing dials these hosts.
   rabbitmq:
-    host: ${RABBITMQ_HOST}
+    host: ${RABBITMQ_HOST:localhost}
     port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USER}
-    password: ${RABBITMQ_PASSWORD}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
     virtual-host: ${RABBITMQ_VHOST:/}
 
   data:
     redis:
-      host: ${REDIS_HOST}
+      host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD}
+      password: ${REDIS_PASSWORD:}
 
 logging:
   level:
     root: WARN
-    com.agrosafe: INFO
+    com.satecho.agrosafe: INFO
