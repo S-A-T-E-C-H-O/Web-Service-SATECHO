@@ -110,6 +110,10 @@ public class WebSecurityConfiguration {
                         .requestMatchers(
                                 "/api/v1/authentication/**",
                                 "/api/v1/edge/**",
+                                // External payment providers cannot send a user JWT.
+                                // The controller enforces its own shared-secret
+                                // signature header instead (see PaymentWebhookController).
+                                "/api/v1/webhooks/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",

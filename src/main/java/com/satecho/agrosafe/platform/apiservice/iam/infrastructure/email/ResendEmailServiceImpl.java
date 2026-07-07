@@ -17,14 +17,17 @@ public class ResendEmailServiceImpl implements EmailService {
     private final Resend resend;
     private final String from;
     private final String baseUrl;
+    private final String frontendUrl;
 
     public ResendEmailServiceImpl(
             @Value("${resend.api-key}") String apiKey,
             @Value("${resend.from:onboarding@resend.dev}") String from,
-            @Value("${app.base-url:http://localhost:8080}") String baseUrl) {
+            @Value("${app.base-url:http://localhost:8080}") String baseUrl,
+            @Value("${app.frontend-url:http://localhost:5173}") String frontendUrl) {
         this.resend = new Resend(apiKey);
         this.from = from;
         this.baseUrl = baseUrl;
+        this.frontendUrl = frontendUrl;
     }
 
     @Override
@@ -47,9 +50,9 @@ public class ResendEmailServiceImpl implements EmailService {
 
     @Override
     public void sendPasswordResetEmail(String to, String fullName, String resetToken) {
-        // TODO: cuando el frontend esté desplegado, reemplazar baseUrl por app.frontend-url
-        //       y cambiar la ruta a: "${frontendUrl}/reset-password?token=" + resetToken
-        var resetUrl = baseUrl + "/api/v1/authentication/reset-password?token=" + resetToken;
+        // The reset endpoint is POST-only: a link pointing at the API would 405.
+        // The web app's /reset-password view reads ?token= and POSTs it back.
+        var resetUrl = frontendUrl + "/reset-password?token=" + resetToken;
         var options = CreateEmailOptions.builder()
                 .from(from)
                 .to(to)
