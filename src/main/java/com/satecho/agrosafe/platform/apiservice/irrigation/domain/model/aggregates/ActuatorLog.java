@@ -23,13 +23,13 @@ public class ActuatorLog extends AuditableAbstractAggregateRoot<ActuatorLog> {
     public ActuatorLog() {}
 
     public ActuatorLog(Long deviceId, Long zoneId, ActuatorType actuatorType, ActuatorAction action,
-                       String commandSource, boolean success, String responseMessage) {
+                       String commandSource, boolean success, String responseMessage, Instant executedAt) {
         this.deviceId = deviceId;
         this.zoneId = zoneId;
         this.actuatorType = actuatorType;
         this.action = action;
         this.commandSource = commandSource;
-        this.executedAt = Instant.now();
+        this.executedAt = executedAt != null ? executedAt : Instant.now();
         this.success = success;
         this.responseMessage = responseMessage;
     }

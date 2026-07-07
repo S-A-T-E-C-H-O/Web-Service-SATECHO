@@ -10,7 +10,8 @@ public class IngestSecurityEventCommandFromResourceAssembler {
     public static IngestSecurityEventCommand toCommand(IngestSecurityEventResource resource) {
         EventClassification classification = EventClassification.valueOf(resource.classification());
         Instant detectedAt = resource.detectedAt() != null ? resource.detectedAt() : Instant.now();
-        return new IngestSecurityEventCommand(resource.farmId(), resource.deviceId(), classification,
-                resource.confidenceLevel(), detectedAt, resource.locationDescription(), resource.rawData());
+        return new IngestSecurityEventCommand(resource.farmId(), resource.deviceId(), resource.zoneId(), classification,
+                resource.confidenceLevel(), detectedAt, resource.locationDescription(), resource.rawData(),
+                resource.pulseDurationMs(), resource.triggersPerMinute());
     }
 }

@@ -33,8 +33,9 @@ public class SecurityCommandServiceImpl implements SecurityCommandService {
 
     @Override
     public Result<SecurityEvent, ApplicationError> ingestSecurityEvent(IngestSecurityEventCommand command) {
-        var event = new SecurityEvent(command.farmId(), command.deviceId(), command.classification(),
-                command.confidenceLevel(), command.detectedAt(), command.locationDescription(), command.rawData());
+        var event = new SecurityEvent(command.farmId(), command.deviceId(), command.zoneId(), command.classification(),
+                command.confidenceLevel(), command.detectedAt(), command.locationDescription(), command.rawData(),
+                command.pulseDurationMs(), command.triggersPerMinute());
         var saved = securityEventRepository.save(event);
         // EP-013: the raw event is always kept for the audit trail, but if the farmer silenced
         // detection for this specific parcel, skip the notification fan-out.

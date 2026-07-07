@@ -7,7 +7,10 @@ import com.satecho.agrosafe.platform.apiservice.security.domain.repositories.Sec
 import com.satecho.agrosafe.platform.apiservice.security.infrastructure.persistence.jpa.assemblers.SecurityEventPersistenceAssembler;
 import com.satecho.agrosafe.platform.apiservice.security.infrastructure.persistence.jpa.repositories.SecurityEventPersistenceRepository;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
+
+import static com.satecho.agrosafe.platform.apiservice.security.infrastructure.persistence.jpa.repositories.SecurityEventPersistenceRepository.*;
 
 import java.time.Instant;
 import java.util.List;
@@ -37,7 +40,14 @@ public class SecurityEventRepositoryImpl implements SecurityEventRepository {
     public List<SecurityEvent> findByFarmIdWithFilters(Long farmId, Instant from, Instant to,
                                                        EventSeverity severity, EventClassification classification,
                                                        int limit, int page) {
-        return persistenceRepository.findByFarmIdWithFilters(farmId, from, to, severity, classification,
-                PageRequest.of(page, limit)).stream().map(SecurityEventPersistenceAssembler::toDomainFromPersistence).toList();
+        var spec = hasFarmId(farmId)
+                .and(detectedAtGreaterThanOrEqualTo(from))
+                .and(detectedAtLessThanOrEqualTo(to))
+                .and(hasSeverity(severity))
+                .and(hasClassification(classification));
+        var pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "detectedAt"));
+        return persistenceRepository.findAll(spec, pageable).stream()
+                .map(SecurityEventPersistenceAssembler::toDomainFromPersistence)
+                .toList();
     }
 }

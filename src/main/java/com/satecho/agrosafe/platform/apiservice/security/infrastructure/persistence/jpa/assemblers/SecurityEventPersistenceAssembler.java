@@ -12,6 +12,7 @@ public final class SecurityEventPersistenceAssembler {
         d.setId(e.getId());
         d.setFarmId(e.getFarmId());
         d.setDeviceId(e.getDeviceId());
+        d.setZoneId(e.getZoneId());
         d.setClassification(e.getClassification());
         d.setConfidenceLevel(e.getConfidenceLevel());
         d.setSeverity(e.getSeverity());
@@ -21,6 +22,8 @@ public final class SecurityEventPersistenceAssembler {
         d.setAcknowledgedAt(e.getAcknowledgedAt());
         d.setLocationDescription(e.getLocationDescription());
         d.setRawData(e.getRawData());
+        d.setPulseDurationMs(e.getPulseDurationMs());
+        d.setTriggersPerMinute(e.getTriggersPerMinute());
         return d;
     }
 
@@ -30,6 +33,7 @@ public final class SecurityEventPersistenceAssembler {
         if (d.getId() != null) e.setId(d.getId());
         e.setFarmId(d.getFarmId());
         e.setDeviceId(d.getDeviceId());
+        e.setZoneId(d.getZoneId());
         e.setClassification(d.getClassification());
         e.setConfidenceLevel(d.getConfidenceLevel());
         e.setSeverity(d.getSeverity());
@@ -39,6 +43,8 @@ public final class SecurityEventPersistenceAssembler {
         e.setAcknowledgedAt(d.getAcknowledgedAt());
         e.setLocationDescription(d.getLocationDescription());
         e.setRawData(d.getRawData());
+        e.setPulseDurationMs(d.getPulseDurationMs());
+        e.setTriggersPerMinute(d.getTriggersPerMinute());
         return e;
     }
 }

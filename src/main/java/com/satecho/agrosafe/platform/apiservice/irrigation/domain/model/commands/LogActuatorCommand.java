@@ -2,6 +2,7 @@ package com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.command
 
 import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.valueobjects.ActuatorAction;
 import com.satecho.agrosafe.platform.apiservice.irrigation.domain.model.valueobjects.ActuatorType;
+import java.time.Instant;
 
 public record LogActuatorCommand(Long deviceId, Long zoneId, ActuatorType actuatorType, ActuatorAction action,
-                                 String commandSource, boolean success, String responseMessage) {}
+                                 String commandSource, boolean success, String responseMessage, Instant executedAt) {}

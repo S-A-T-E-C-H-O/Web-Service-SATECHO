@@ -22,7 +22,7 @@ public class ActuatorCommandServiceImpl implements ActuatorCommandService {
     @Override
     public Result<ActuatorLog, ApplicationError> logActuatorAction(LogActuatorCommand command) {
         var log = new ActuatorLog(command.deviceId(), command.zoneId(), command.actuatorType(), command.action(),
-                command.commandSource(), command.success(), command.responseMessage());
+                command.commandSource(), command.success(), command.responseMessage(), command.executedAt());
         return Result.success(actuatorLogRepository.save(log));
     }
 }

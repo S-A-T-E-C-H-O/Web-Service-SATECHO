@@ -71,7 +71,9 @@ public class EdgeController {
                                                 @RequestBody EdgeSoilReadingResource resource) {
         if (!hasValidApiKey(apiKeyHeader, resource.apiKey())) return invalidApiKey();
 
-        var timestamp = parseTimestamp(resource.createdAt(), Instant.now());
+        var timestamp = parseTimestamp(
+                resource.createdAt() != null ? resource.createdAt() : resource.recordedAt(),
+                Instant.now());
         var commands = new ArrayList<IngestTelemetryCommand>();
         if (resource.moisture() != null) {
             commands.add(new IngestTelemetryCommand(deviceId, resource.zoneId(), MetricType.SOIL_MOISTURE, resource.moisture(), timestamp));
@@ -84,6 +86,9 @@ public class EdgeController {
         }
         if (resource.temperature() != null) {
             commands.add(new IngestTelemetryCommand(deviceId, resource.zoneId(), MetricType.SOIL_TEMPERATURE, resource.temperature(), timestamp));
+        }
+        if (resource.ambientTemperature() != null) {
+            commands.add(new IngestTelemetryCommand(deviceId, resource.zoneId(), MetricType.AMBIENT_TEMPERATURE, resource.ambientTemperature(), timestamp));
         }
         if (commands.isEmpty()) {
             return ResponseEntity.badRequest()
@@ -116,11 +121,14 @@ public class EdgeController {
         var command = new IngestSecurityEventCommand(
                 farmId,
                 deviceId,
+                resource.zoneId(),
                 classification,
                 confidence,
                 detectedAt,
                 location,
-                toRawDataWithoutApiKey(resource));
+                toRawDataWithoutApiKey(resource),
+                resource.pulseDurationMs(),
+                resource.triggersPerMinute());
 
         var result = securityCommandService.ingestSecurityEvent(command);
         return ResponseEntityAssembler.toResponseEntityFromResult(
@@ -152,7 +160,8 @@ public class EdgeController {
                 action,
                 resource.commandSource() != null ? resource.commandSource() : "EDGE_REST",
                 resource.success(),
-                resource.responseMessage());
+                resource.responseMessage(),
+                parseTimestamp(resource.executedAt(), Instant.now()));
 
         var result = actuatorCommandService.logActuatorAction(command);
         return ResponseEntityAssembler.toResponseEntityFromResult(
@@ -270,7 +279,9 @@ public class EdgeController {
             Double ec,
             Double ph,
             Double temperature,
-            @JsonProperty("created_at") String createdAt
+            @JsonProperty("ambient_temperature") Double ambientTemperature,
+            @JsonProperty("created_at") String createdAt,
+            @JsonProperty("recorded_at") String recordedAt
     ) {
     }
 
@@ -293,7 +304,8 @@ public class EdgeController {
             String action,
             @JsonProperty("command_source") String commandSource,
             boolean success,
-            @JsonProperty("response_message") String responseMessage
+            @JsonProperty("response_message") String responseMessage,
+            @JsonProperty("executed_at") String executedAt
     ) {
     }
 

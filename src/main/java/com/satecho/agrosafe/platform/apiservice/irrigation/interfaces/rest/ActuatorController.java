@@ -43,7 +43,7 @@ public class ActuatorController {
     public ResponseEntity<?> logCommand(@PathVariable Long deviceId, @RequestBody ActuatorCommandResource resource) {
         var command = new LogActuatorCommand(deviceId, resource.zoneId(),
                 ActuatorType.valueOf(resource.actuatorType()), ActuatorAction.valueOf(resource.action()),
-                resource.commandSource(), resource.success(), resource.responseMessage());
+                resource.commandSource(), resource.success(), resource.responseMessage(), null);
         var result = actuatorCommandService.logActuatorAction(command);
         return ResponseEntityAssembler.toResponseEntityFromResult(
                 result, ActuatorController::toActuatorLogResource, ResponseEntity.ok().build().getStatusCode());

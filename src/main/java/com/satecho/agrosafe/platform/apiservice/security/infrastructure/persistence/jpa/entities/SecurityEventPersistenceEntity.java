@@ -20,6 +20,8 @@ public class SecurityEventPersistenceEntity extends AuditableAbstractPersistence
     private Long farmId;
     @Column(name = "device_id", nullable = false)
     private Long deviceId;
+    @Column(name = "zone_id")
+    private Long zoneId;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private EventClassification classification;
@@ -41,4 +43,8 @@ public class SecurityEventPersistenceEntity extends AuditableAbstractPersistence
     @Lob
     @Column(name = "raw_data", columnDefinition = "TEXT")
     private String rawData;
+    @Column(name = "pulse_duration_ms")
+    private Double pulseDurationMs;
+    @Column(name = "triggers_per_minute")
+    private Integer triggersPerMinute;
 }

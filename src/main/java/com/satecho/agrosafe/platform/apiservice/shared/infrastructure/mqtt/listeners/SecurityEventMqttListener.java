@@ -63,12 +63,15 @@ public class SecurityEventMqttListener {
             Long     deviceId = Long.parseLong(parts[3]);
 
             EventClassification classification = parseClassification(dto.classification());
-            double confidenceLevel = deriveConfidence(classification);
+            double confidenceLevel = dto.confidenceLevel() != null ? dto.confidenceLevel() : deriveConfidence(classification);
             Instant detectedAt = parseTimestamp(dto.recordedAt());
-            String location = dto.zoneId() != null ? "Zone " + dto.zoneId() : "Device " + deviceId;
+            String location = dto.locationDescription() != null && !dto.locationDescription().isBlank()
+                    ? dto.locationDescription()
+                    : dto.zoneId() != null ? "Zone " + dto.zoneId() : "Device " + deviceId;
 
-            var command = new IngestSecurityEventCommand(farmId, deviceId, classification,
-                    confidenceLevel, detectedAt, location, payload);
+            var command = new IngestSecurityEventCommand(farmId, deviceId, dto.zoneId(), classification,
+                    confidenceLevel, detectedAt, location, payload,
+                    dto.pulseDurationMs(), dto.triggersPerMinute());
 
             var result = securityCommandService.ingestSecurityEvent(command);
             if (result.isFailure()) {
@@ -113,6 +116,8 @@ public class SecurityEventMqttListener {
             @JsonProperty("pulse_duration_ms")   Double  pulseDurationMs,
             @JsonProperty("triggers_per_minute") Integer triggersPerMinute,
             String classification,
+            @JsonProperty("confidence_level")    Double  confidenceLevel,
+            @JsonProperty("location_description") String locationDescription,
             @JsonProperty("recorded_at")         String  recordedAt
     ) {}
 }

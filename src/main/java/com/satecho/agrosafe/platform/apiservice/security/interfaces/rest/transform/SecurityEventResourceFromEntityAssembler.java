@@ -8,11 +8,11 @@ public class SecurityEventResourceFromEntityAssembler {
     private SecurityEventResourceFromEntityAssembler() {}
     public static SecurityEventResource toResource(SecurityEvent e) {
         if (e == null) return null;
-        return new SecurityEventResource(e.getId(), e.getFarmId(), e.getDeviceId(),
+        return new SecurityEventResource(e.getId(), e.getFarmId(), e.getDeviceId(), e.getZoneId(),
                 e.getClassification() != null ? e.getClassification().name() : null,
                 e.getConfidenceLevel(), e.getSeverity() != null ? e.getSeverity().name() : null,
                 e.getDetectedAt(), e.getAcknowledged(), e.getAcknowledgedBy(), e.getAcknowledgedAt(),
-                e.getLocationDescription(), e.getRawData());
+                e.getLocationDescription(), e.getRawData(), e.getPulseDurationMs(), e.getTriggersPerMinute());
     }
     public static List<SecurityEventResource> toResourceList(List<SecurityEvent> entities) {
         if (entities == null) return List.of();

@@ -13,6 +13,7 @@ public class SecurityEvent extends AuditableAbstractAggregateRoot<SecurityEvent>
     @Setter private Long id;
     @Setter private Long farmId;
     @Setter private Long deviceId;
+    @Setter private Long zoneId;
     @Setter private EventClassification classification;
     @Setter private Double confidenceLevel;
     @Setter private EventSeverity severity;
@@ -22,11 +23,14 @@ public class SecurityEvent extends AuditableAbstractAggregateRoot<SecurityEvent>
     @Setter private Instant acknowledgedAt;
     @Setter private String locationDescription;
     @Setter private String rawData;
+    @Setter private Double pulseDurationMs;
+    @Setter private Integer triggersPerMinute;
 
     public SecurityEvent() {}
 
-    public SecurityEvent(Long farmId, Long deviceId, EventClassification classification,
-                         Double confidenceLevel, Instant detectedAt, String locationDescription, String rawData) {
+    public SecurityEvent(Long farmId, Long deviceId, Long zoneId, EventClassification classification,
+                         Double confidenceLevel, Instant detectedAt, String locationDescription, String rawData,
+                         Double pulseDurationMs, Integer triggersPerMinute) {
         if (farmId == null) throw new IllegalArgumentException("farmId cannot be null");
         if (deviceId == null) throw new IllegalArgumentException("deviceId cannot be null");
         if (classification == null) throw new IllegalArgumentException("classification cannot be null");
@@ -34,6 +38,7 @@ public class SecurityEvent extends AuditableAbstractAggregateRoot<SecurityEvent>
         if (detectedAt == null) throw new IllegalArgumentException("detectedAt cannot be null");
         this.farmId = farmId;
         this.deviceId = deviceId;
+        this.zoneId = zoneId;
         this.classification = classification;
         this.confidenceLevel = Math.max(0.0, Math.min(100.0, confidenceLevel));
         this.severity = determineSeverity(classification);
@@ -41,6 +46,8 @@ public class SecurityEvent extends AuditableAbstractAggregateRoot<SecurityEvent>
         this.acknowledged = false;
         this.locationDescription = locationDescription;
         this.rawData = rawData;
+        this.pulseDurationMs = pulseDurationMs;
+        this.triggersPerMinute = triggersPerMinute;
     }
 
     public void acknowledge(Long acknowledgedBy) {

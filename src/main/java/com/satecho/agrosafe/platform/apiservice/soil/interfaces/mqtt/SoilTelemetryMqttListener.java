@@ -59,13 +59,14 @@ public class SoilTelemetryMqttListener {
             String[] parts   = topic.split("/");
             Long     deviceId = Long.parseLong(parts[3]);
             Long     zoneId   = dto.zoneId();
-            Instant  ts       = parseTimestamp(dto.createdAt());
+            Instant  ts       = parseTimestamp(dto.createdAt() != null ? dto.createdAt() : dto.recordedAt());
 
             List<IngestTelemetryCommand> commands = new ArrayList<>();
             if (dto.moisture()    != null) commands.add(new IngestTelemetryCommand(deviceId, zoneId, MetricType.SOIL_MOISTURE,            dto.moisture(),    ts));
             if (dto.ec()          != null) commands.add(new IngestTelemetryCommand(deviceId, zoneId, MetricType.ELECTRICAL_CONDUCTIVITY,  dto.ec(),          ts));
             if (dto.ph()          != null) commands.add(new IngestTelemetryCommand(deviceId, zoneId, MetricType.SOIL_PH,                  dto.ph(),          ts));
             if (dto.temperature() != null) commands.add(new IngestTelemetryCommand(deviceId, zoneId, MetricType.SOIL_TEMPERATURE,         dto.temperature(), ts));
+            if (dto.ambientTemperature() != null) commands.add(new IngestTelemetryCommand(deviceId, zoneId, MetricType.AMBIENT_TEMPERATURE, dto.ambientTemperature(), ts));
 
             if (commands.isEmpty()) {
                 log.warn("Soil MQTT message on topic {} had no valid metric fields", topic);
@@ -105,6 +106,8 @@ public class SoilTelemetryMqttListener {
             Double ec,
             Double ph,
             Double temperature,
-            @JsonProperty("created_at") String  createdAt
+            @JsonProperty("ambient_temperature") Double ambientTemperature,
+            @JsonProperty("created_at") String  createdAt,
+            @JsonProperty("recorded_at") String  recordedAt
     ) {}
 }
