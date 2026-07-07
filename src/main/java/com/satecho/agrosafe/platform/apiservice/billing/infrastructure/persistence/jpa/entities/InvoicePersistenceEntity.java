@@ -9,16 +9,11 @@ import lombok.Setter;
 
 import java.time.Instant;
 
-<<<<<<< HEAD
+/**
+ * JPA entity mapping representing database records in the 'billing_invoices' table.
+ */
 @Entity(name = "BillingInvoicePersistenceEntity")
 @Table(name = "billing_invoices")
-=======
-/**
- * JPA entity mapping representing database records in the 'invoices' table.
- */
-@Entity
-@Table(name = "invoices")
->>>>>>> release/1.9.0
 @Getter
 @Setter
 @NoArgsConstructor
